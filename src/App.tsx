@@ -1,127 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import BottomNav from "./components/BottomNav";
+import SpinScreen from "./screens/SpinScreen";
+import QuestsScreen from "./screens/QuestsScreen";
+import CampaignsScreen from "./screens/CampaignsScreen";
+import CampaignDetailScreen from "./screens/CampaignDetailScreen";
+import StoreScreen from "./screens/StoreScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import { useUser } from "./context/useUser";
 
-function HeroSection() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const { loading, error } = useUser();
 
-  return (
-    <section id="center">
-      <div className="hero">
-        <img src={heroImg} className="base" width="170" height="179" alt="" />
-        <img src={reactLogo} className="framework" alt="React logo" />
-        <img src={viteLogo} className="vite" alt="Vite logo" />
-      </div>
-      <div>
-        <h1>Get started</h1>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-        </p>
-      </div>
-      <button
-        type="button"
-        className="counter"
-        onClick={() => setCount((c) => c + 1)}
-      >
-        Count is {count}
-      </button>
-    </section>
-  )
-}
+  if (loading) return <LoadingScreen />;
+  if (error) return <ErrorScreen message={error} />;
 
-function DocsLinks() {
-  return (
-    <div id="docs">
-      <svg className="icon" role="presentation" aria-hidden="true">
-        <use href="/icons.svg#documentation-icon"></use>
-      </svg>
-      <h2>Documentation</h2>
-      <p>Your questions, answered</p>
-      <ul>
-        <li>
-          <a href="https://vite.dev/" target="_blank">
-            <img className="logo" src={viteLogo} alt="" />
-            Explore Vite
-          </a>
-        </li>
-        <li>
-          <a href="https://react.dev/" target="_blank">
-            <img className="button-icon" src={reactLogo} alt="" />
-            Learn more
-          </a>
-        </li>
-      </ul>
-    </div>
-  )
-}
-
-function SocialLinks() {
-  return (
-    <div id="social">
-      <svg className="icon" role="presentation" aria-hidden="true">
-        <use href="/icons.svg#social-icon"></use>
-      </svg>
-      <h2>Connect with us</h2>
-      <p>Join the Vite community</p>
-      <ul>
-        <li>
-          <a href="https://github.com/vitejs/vite" target="_blank">
-            <svg className="button-icon" role="presentation" aria-hidden="true">
-              <use href="/icons.svg#github-icon"></use>
-            </svg>
-            GitHub
-          </a>
-        </li>
-        <li>
-          <a href="https://chat.vite.dev/" target="_blank">
-            <svg className="button-icon" role="presentation" aria-hidden="true">
-              <use href="/icons.svg#discord-icon"></use>
-            </svg>
-            Discord
-          </a>
-        </li>
-        <li>
-          <a href="https://x.com/vite_js" target="_blank">
-            <svg className="button-icon" role="presentation" aria-hidden="true">
-              <use href="/icons.svg#x-icon"></use>
-            </svg>
-            X.com
-          </a>
-        </li>
-        <li>
-          <a href="https://bsky.app/profile/vite.dev" target="_blank">
-            <svg className="button-icon" role="presentation" aria-hidden="true">
-              <use href="/icons.svg#bluesky-icon"></use>
-            </svg>
-            Bluesky
-          </a>
-        </li>
-      </ul>
-    </div>
-  )
-}
-
-function NextStepsSection() {
-  return (
-    <section id="next-steps">
-      <DocsLinks />
-      <SocialLinks />
-    </section>
-  )
-}
-
-function App() {
   return (
     <>
-      <HeroSection />
-      <div className="ticks"></div>
-      <NextStepsSection />
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <Routes>
+        <Route path="/" element={<SpinScreen />} />
+        <Route path="/quests" element={<QuestsScreen />} />
+        <Route path="/campaigns" element={<CampaignsScreen />} />
+        <Route path="/campaigns/:id" element={<CampaignDetailScreen />} />
+        <Route path="/store" element={<StoreScreen />} />
+        <Route path="/profile" element={<ProfileScreen />} />
+      </Routes>
+      <BottomNav />
     </>
-  )
+  );
 }
 
-export default App
+function LoadingScreen() {
+  return (
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-4">
+      <div className="bg-animated" />
+      <div className="w-12 h-12 rounded-full border-4 border-slate-200
+        border-t-blue-500 animate-spin" />
+      <p className="text-sm font-semibold text-slate-500">Loading QuestPad...</p>
+    </div>
+  );
+}
+
+import { PiWarningCircle } from "react-icons/pi";
+
+function ErrorScreen({ message }: { message: string }) {
+  return (
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-4 px-8">
+      <div className="bg-animated" />
+      <PiWarningCircle size={48} className="text-amber-500" />
+      <p className="text-sm font-semibold text-slate-700 text-center">
+        {message}
+      </p>
+      <p className="text-xs text-slate-500 text-center">
+        Please open QuestPad from Telegram
+      </p>
+    </div>
+  );
+}

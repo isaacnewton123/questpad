@@ -17,4 +17,20 @@ export default defineConfig({
       }
     }),
   ],
+  server: {
+    allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:54321/functions/v1',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/supabase': {
+        target: 'http://127.0.0.1:54321',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/supabase/, ''),
+      }
+    }
+  },
 })
