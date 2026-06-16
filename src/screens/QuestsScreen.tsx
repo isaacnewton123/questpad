@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PiClipboardText, PiSun, PiPlayCircle, PiCheckCircle, PiBank } from "react-icons/pi";
 import RewardBadge from "../components/RewardBadge";
 import ProofModal from "../components/ProofModal";
@@ -21,9 +21,12 @@ export default function QuestsScreen() {
   const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   const { showRewardedAd, isPlaying } = useAds(userId);
 
-  const handleAdClick = useAdClickHandler(showRewardedAd, refetchUser);
-
-  const adRemaining = data.dailyStatus.maxAdWatches - data.dailyStatus.adWatches;
+  const adCheck = useAdVerification(
+    data.dailyStatus.adWatches,
+    data.dailyStatus.maxAdWatches,
+    showRewardedAd,
+    refetchUser
+  );
 
   return (
     <div className="flex flex-col gap-6 pt-4 pb-nav px-4 max-w-md mx-auto">
@@ -32,10 +35,10 @@ export default function QuestsScreen() {
 
       <DailySection
         checkedIn={data.dailyStatus.checkedIn}
-        adRemaining={adRemaining}
-        loading={loading || (isPlaying ? "ad" : null)}
+        adRemaining={adCheck.adRemaining}
+        loading={loading || (isPlaying || adCheck.verifyingAd ? "ad" : null)}
         onCheckin={checkin.onClick}
-        onWatchAd={handleAdClick}
+        onWatchAd={adCheck.handleAdClick}
       />
 
       {data.official && (
@@ -94,18 +97,43 @@ function useProofModal(submitProof: (id: string, proof: string) => Promise<void>
 
 function useAdClickHandler(
   showRewardedAd: () => Promise<{ success: boolean; provider?: import("../hooks/useAds").AdProvider }>,
-  refetchUser: () => void
+  refetchUser: () => void,
+  setVerifying: (v: boolean) => void
 ) {
   return async () => {
     const { success } = await showRewardedAd();
     if (success) {
+      setVerifying(true);
       // S2S webhooks can take a few seconds. We poll 3 times 
       // to ensure the UI updates
       setTimeout(refetchUser, 2000);
       setTimeout(refetchUser, 5000);
-      setTimeout(refetchUser, 9000);
+      setTimeout(() => {
+        refetchUser();
+        setVerifying(false); // Failsafe stop
+      }, 9000);
     }
   };
+}
+
+function useAdVerification(
+  adWatches: number,
+  maxAdWatches: number,
+  showRewardedAd: () => Promise<{ success: boolean; provider?: import("../hooks/useAds").AdProvider }>,
+  refetchUser: () => void
+) {
+  const [verifyingAd, setVerifyingAd] = useState(false);
+  const handleAdClick = useAdClickHandler(showRewardedAd, refetchUser, setVerifyingAd);
+
+  const prevAdWatches = useRef(adWatches);
+  useEffect(() => {
+    if (adWatches > prevAdWatches.current) {
+      setVerifyingAd(false);
+    }
+    prevAdWatches.current = adWatches;
+  }, [adWatches]);
+
+  return { verifyingAd, handleAdClick, adRemaining: maxAdWatches - adWatches };
 }
 
 function useCheckinModal(handleCheckin: () => Promise<boolean>) {
