@@ -1,30 +1,40 @@
 import { PRIVACY_SECTIONS } from "../constants/privacy";
+import { Link } from "react-router-dom";
+import { PiCaretLeftBold } from "react-icons/pi";
 
 function PolicySection({ title, content }: { title: string; content: string }) {
   return (
-    <section className="space-y-3">
-      <h2 className="text-xl font-semibold text-white">{title}</h2>
-      <p className="text-[#94A3B8] leading-relaxed">{content}</p>
+    <section className="space-y-2">
+      <h2 className="text-lg font-bold text-slate-800">{title}</h2>
+      <p className="text-slate-600 text-sm leading-relaxed">{content}</p>
     </section>
   );
 }
 
 export default function PrivacyScreen() {
   return (
-    <div className="min-h-screen bg-[#0F172A] text-white p-6 overflow-y-auto pb-24">
-      <div className="max-w-3xl mx-auto space-y-8">
+    <div className="flex flex-col gap-6 pt-4 pb-nav px-4 max-w-md mx-auto">
+      <div className="bg-animated" />
+      
+      <div className="flex items-center">
+        <Link to="/profile" className="flex items-center gap-1 text-blue-500 font-semibold bg-white/60 px-3 py-1.5 rounded-xl shadow-sm">
+          <PiCaretLeftBold /> Back
+        </Link>
+      </div>
+
+      <div className="space-y-6 bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-slate-100">
         <div>
-          <h1 className="text-4xl font-bold text-[#E2E8F0] tracking-tight">Privacy Policy</h1>
-          <p className="text-[#94A3B8] text-sm mt-2 font-medium uppercase tracking-wider">Last Updated: June 2026</p>
+          <h1 className="text-2xl font-black text-slate-800 tracking-tight">Privacy Policy</h1>
+          <p className="text-slate-500 text-xs mt-1 font-semibold uppercase tracking-wider">Last Updated: June 2026</p>
         </div>
 
-        <div className="space-y-8 bg-[#1E293B]/50 p-6 sm:p-8 rounded-2xl border border-slate-800">
+        <div className="space-y-6">
           {PRIVACY_SECTIONS.map((section, index) => (
             <PolicySection key={index} title={section.title} content={section.content} />
           ))}
         </div>
 
-        <div className="pt-6 border-t border-slate-700/50 text-sm text-[#64748B] text-center">
+        <div className="pt-4 border-t border-slate-200 text-xs text-slate-500 text-center font-medium">
           <p>If you have any questions or require clarification about this Privacy Policy, please contact the official administration team via the QuestPad Telegram Bot.</p>
         </div>
       </div>
