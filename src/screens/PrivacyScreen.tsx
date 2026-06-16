@@ -1,5 +1,3 @@
-import React from "react";
-
 const PRIVACY_SECTIONS = [
   {
     title: "1. Information We Collect",

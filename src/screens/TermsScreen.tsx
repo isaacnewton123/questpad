@@ -1,5 +1,3 @@
-import React from "react";
-
 const TERMS_SECTIONS = [
   {
     title: "1. Acceptance of Terms",
