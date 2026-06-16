@@ -25,7 +25,7 @@ export function useAds(userId?: number) {
       if (window.Adsgram) {
         try {
           const AdController = window.Adsgram.init({
-            blockId: "35405",
+            blockId: "35408",
           });
           
           await AdController.show();
