@@ -58,6 +58,17 @@ export default function ProfileScreen() {
       <WalletSection wallet={wallet} />
       <BalanceSection user={user} refetchUser={refetchUser} />
       <ReferralSection />
+      <LegalSection />
+    </div>
+  );
+}
+
+function LegalSection() {
+  return (
+    <div className="flex justify-center gap-4 text-xs font-medium text-slate-400 mt-2 mb-4">
+      <Link to="/terms" className="hover:text-blue-500 transition-colors">Terms of Use</Link>
+      <span>•</span>
+      <Link to="/privacy" className="hover:text-blue-500 transition-colors">Privacy Policy</Link>
     </div>
   );
 }
