@@ -99,7 +99,11 @@ function useAdClickHandler(
   return async () => {
     const { success } = await showRewardedAd();
     if (success) {
-      setTimeout(refetchUser, 1500);
+      // S2S webhooks can take a few seconds. We poll 3 times 
+      // to ensure the UI updates
+      setTimeout(refetchUser, 2000);
+      setTimeout(refetchUser, 5000);
+      setTimeout(refetchUser, 9000);
     }
   };
 }
