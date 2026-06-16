@@ -9,12 +9,14 @@ import ProfileScreen from "./screens/ProfileScreen";
 import AdminScreen from "./screens/AdminScreen";
 import AdminApproveScreen from "./screens/AdminApproveScreen";
 import ReferralsScreen from "./screens/ReferralsScreen";
+import TermsScreen from "./screens/TermsScreen";
+import PrivacyScreen from "./screens/PrivacyScreen";
 import { useUser } from "./context/useUser";
 
 export default function App() {
   const { loading, error } = useUser();
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith("/admin");
+  const hideNav = location.pathname.startsWith("/admin") || location.pathname === "/terms" || location.pathname === "/privacy";
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;
@@ -31,8 +33,10 @@ export default function App() {
         <Route path="/referrals" element={<ReferralsScreen />} />
         <Route path="/admin" element={<AdminScreen />} />
         <Route path="/admin/approve/:id" element={<AdminApproveScreen />} />
+        <Route path="/terms" element={<TermsScreen />} />
+        <Route path="/privacy" element={<PrivacyScreen />} />
       </Routes>
-      {!isAdminRoute && <BottomNav />}
+      {!hideNav && <BottomNav />}
     </>
   );
 }
