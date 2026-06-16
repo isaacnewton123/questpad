@@ -82,7 +82,7 @@ function WheelSegments({ segments, rotation }: { segments: WheelSegment[], rotat
       {segments.map((seg, i) => (
         <WheelSlice key={i} seg={seg} index={i} total={segments.length} />
       ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/30 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-white/30 via-transparent to-black/30 pointer-events-none" />
     </div>
   );
 }

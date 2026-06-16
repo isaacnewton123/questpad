@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import BottomNav from "./components/BottomNav";
 import SpinScreen from "./screens/SpinScreen";
 import QuestsScreen from "./screens/QuestsScreen";
@@ -6,10 +6,15 @@ import CampaignsScreen from "./screens/CampaignsScreen";
 import CampaignDetailScreen from "./screens/CampaignDetailScreen";
 import StoreScreen from "./screens/StoreScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import AdminScreen from "./screens/AdminScreen";
+import AdminApproveScreen from "./screens/AdminApproveScreen";
+import ReferralsScreen from "./screens/ReferralsScreen";
 import { useUser } from "./context/useUser";
 
 export default function App() {
   const { loading, error } = useUser();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;
@@ -23,8 +28,11 @@ export default function App() {
         <Route path="/campaigns/:id" element={<CampaignDetailScreen />} />
         <Route path="/store" element={<StoreScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/referrals" element={<ReferralsScreen />} />
+        <Route path="/admin" element={<AdminScreen />} />
+        <Route path="/admin/approve/:id" element={<AdminApproveScreen />} />
       </Routes>
-      <BottomNav />
+      {!isAdminRoute && <BottomNav />}
     </>
   );
 }

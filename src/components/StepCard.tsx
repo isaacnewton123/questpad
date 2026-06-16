@@ -64,7 +64,7 @@ export default function StepCard({
         <StepCardText step={step} Icon={Icon} />
         <ActionButton
           status={status}
-          isPassive={isPassive}
+          taskType={step.task_type}
           cooldown={cooldown}
           opened={opened}
           onStart={handleStartClick}
@@ -106,10 +106,10 @@ function StepNumber({ num, done }: { num: number; done: boolean }) {
 }
 
 function ActionButton({
-  status, isPassive, cooldown, opened, onStart, onVerify,
+  status, taskType, cooldown, opened, onStart, onVerify,
 }: {
   status?: string;
-  isPassive: boolean;
+  taskType: string;
   cooldown: number;
   opened: boolean;
   onStart: () => void;
@@ -136,20 +136,14 @@ function ActionButton({
       </button>
     );
   }
-  if (isPassive && opened) {
-    return (
-      <button onClick={onVerify} className="step-btn-primary">
-        Verify
-      </button>
-    );
-  }
-  if (isPassive) {
+  if (!opened) {
     return (
       <button onClick={onStart} className="step-btn-secondary flex items-center justify-center gap-1">
-        Start <PiArrowRight />
+        {taskType === "tg_join" ? "Join" : "Start"} <PiArrowRight />
       </button>
     );
   }
+
   return (
     <button onClick={onVerify} className="step-btn-primary">
       Verify

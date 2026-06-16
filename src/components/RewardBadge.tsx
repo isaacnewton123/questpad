@@ -1,4 +1,5 @@
-import { PiDiamond, PiCoin, PiArrowsClockwise, PiTicket } from "react-icons/pi";
+import { PiArrowsClockwise, PiTicket, PiCoinsFill } from "react-icons/pi";
+import { SiTon } from "react-icons/si";
 import React from "react";
 
 interface RewardBadgeProps {
@@ -9,10 +10,10 @@ interface RewardBadgeProps {
 const REWARD_CONFIG: Record<string, {
   icon: React.ElementType; label: string; color: string;
 }> = {
-  ton: { icon: PiDiamond, label: "TON", color: "badge-ton" },
-  coin: { icon: PiCoin, label: "", color: "badge-coin" },
-  spin: { icon: PiArrowsClockwise, label: "", color: "badge-spin" },
-  ticket: { icon: PiTicket, label: "", color: "badge-ticket" },
+  ton: { icon: SiTon, label: "TON", color: "badge-ton" },
+  coin: { icon: PiCoinsFill, label: "Coins", color: "badge-coin" },
+  spin: { icon: PiArrowsClockwise, label: "Spin", color: "badge-spin" },
+  ticket: { icon: PiTicket, label: "Ticket", color: "badge-ticket" },
 };
 
 export default function RewardBadge({ type, value }: RewardBadgeProps) {

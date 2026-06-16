@@ -2,9 +2,12 @@ const BASE_URL = import.meta.env.VITE_EDGE_FN_URL as string;
 
 function getInitData(): string {
   try {
-    return window.Telegram?.WebApp?.initData ?? "";
-  } catch {
+    const raw = window.Telegram?.WebApp?.initData;
+    if (raw) return raw;
+    if (import.meta.env.DEV) return "mock";
     return "";
+  } catch {
+    return import.meta.env.DEV ? "mock" : "";
   }
 }
 

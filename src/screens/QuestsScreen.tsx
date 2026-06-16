@@ -9,24 +9,19 @@ import {
   type OfficialStep,
   type CompletionMap,
 } from "../hooks/useQuestData";
+import { useAds } from "../hooks/useAds";
 
 export default function QuestsScreen() {
   const {
     data, loading,
-    handleCheckin, handleWatchAd, handleVerifyStep, submitProof,
+    handleCheckin, handleVerifyStep, submitProof, refetchUser
   } = useQuestData();
-  const [proofStep, setProofStep] = useState<OfficialStep | null>(null);
+  const proof = useProofModal(submitProof, data.official?.quests);
+  const checkin = useCheckinModal(handleCheckin);
+  const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  const { showRewardedAd, isPlaying } = useAds(userId);
 
-  function handleStartPassive(stepId: string) {
-    const step = data.official?.quests.find((s) => s.id === stepId);
-    if (step) setProofStep(step);
-  }
-
-  async function handleProofSubmit(proof: string) {
-    if (!proofStep) return;
-    await submitProof(proofStep.id, proof);
-    setProofStep(null);
-  }
+  const handleAdClick = useAdClickHandler(showRewardedAd, refetchUser);
 
   const adRemaining = data.dailyStatus.maxAdWatches - data.dailyStatus.adWatches;
 
@@ -38,9 +33,9 @@ export default function QuestsScreen() {
       <DailySection
         checkedIn={data.dailyStatus.checkedIn}
         adRemaining={adRemaining}
-        loading={loading}
-        onCheckin={handleCheckin}
-        onWatchAd={handleWatchAd}
+        loading={loading || (isPlaying ? "ad" : null)}
+        onCheckin={checkin.onClick}
+        onWatchAd={handleAdClick}
       />
 
       {data.official && (
@@ -49,16 +44,19 @@ export default function QuestsScreen() {
           completions={data.completions}
           loading={loading}
           onVerify={handleVerifyStep}
-          onStart={handleStartPassive}
+          onStart={proof.start}
         />
       )}
 
-      {proofStep && (
+      {proof.step && (
         <ProofModal
-          taskType={proofStep.task_type}
-          onSubmit={handleProofSubmit}
-          onClose={() => setProofStep(null)}
+          taskType={proof.step.task_type}
+          onSubmit={proof.submit}
+          onClose={() => proof.setStep(null)}
         />
+      )}
+      {checkin.showModal && (
+        <CheckInSuccessModal onClose={() => checkin.setShowModal(false)} />
       )}
     </div>
   );
@@ -75,6 +73,46 @@ function QuestBoardHeader() {
       </p>
     </header>
   );
+}
+
+function useProofModal(submitProof: (id: string, proof: string) => Promise<void>, quests: OfficialStep[] = []) {
+  const [step, setStep] = useState<OfficialStep | null>(null);
+  
+  function start(stepId: string) {
+    const found = quests.find((s) => s.id === stepId);
+    if (found) setStep(found);
+  }
+
+  async function submit(proof: string) {
+    if (!step) return;
+    await submitProof(step.id, proof);
+    setStep(null);
+  }
+
+  return { step, setStep, start, submit };
+}
+
+function useAdClickHandler(
+  showRewardedAd: () => Promise<{ success: boolean; provider?: import("../hooks/useAds").AdProvider }>,
+  refetchUser: () => void
+) {
+  return async () => {
+    const { success } = await showRewardedAd();
+    if (success) {
+      setTimeout(refetchUser, 1500);
+    }
+  };
+}
+
+function useCheckinModal(handleCheckin: () => Promise<boolean>) {
+  const [showModal, setShowModal] = useState(false);
+
+  async function onClick() {
+    const success = await handleCheckin();
+    if (success) setShowModal(true);
+  }
+
+  return { showModal, setShowModal, onClick };
 }
 
 function DailySection({
@@ -166,21 +204,49 @@ function OfficialSection({
         <PiBank className="text-slate-400" /> Official
       </h2>
       <div className="flex flex-col gap-2 mt-3">
-        {visibleSteps.map((step) => (
+        {visibleSteps.map((step) => {
+          console.log("STEP DEBUG:", step.title, step.reward_type, step.reward_value);
+          return (
           <QuestCard
             key={step.id}
             title={step.title}
             description={step.description}
             taskType={step.task_type}
-            rewardType={campaign.reward_type}
-            rewardValue={campaign.reward_value}
+            targetUrl={step.target_url}
+            rewardType={step.reward_type || campaign.reward_type}
+            rewardValue={step.reward_value || campaign.reward_value}
             status={completions[step.id]?.status}
             loading={loading === step.id}
             onVerify={() => onVerify(step.id)}
             onStart={() => onStart(step.id)}
           />
-        ))}
+          );
+        })}
       </div>
     </section>
+  );
+}
+
+function CheckInSuccessModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4 border-4 border-amber-50">
+            <PiCheckCircle className="text-amber-500" size={32} />
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Check-in Complete!</h2>
+          <p className="text-sm text-slate-500 mb-6">
+            You've successfully checked in for today and earned <strong className="text-amber-500">50 Coins</strong>. Come back tomorrow for more!
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold rounded-2xl transition-all shadow-sm shadow-amber-200"
+          >
+            Awesome!
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

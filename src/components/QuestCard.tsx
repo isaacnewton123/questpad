@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { PiTelegramLogo, PiXLogo, PiGlobe, PiCheck } from "react-icons/pi";
 import RewardBadge from "./RewardBadge";
 
@@ -5,6 +6,7 @@ interface QuestCardProps {
   title: string;
   description: string;
   taskType: string;
+  targetUrl: string;
   rewardType: string;
   rewardValue: number;
   status?: string;
@@ -25,10 +27,16 @@ const PASSIVE_TYPES = new Set([
 ]);
 
 export default function QuestCard({
-  title, description, taskType, rewardType,
+  title, description, taskType, targetUrl, rewardType,
   rewardValue, status, loading: isLoading, onVerify, onStart,
 }: QuestCardProps) {
   const Icon = TASK_ICONS[taskType] ?? PiGlobe;
+  const [opened, setOpened] = useState(false);
+
+  function handleActionClick() {
+    if (targetUrl) window.open(targetUrl, "_blank");
+    setOpened(true);
+  }
 
   return (
     <div className="glass-panel p-4 flex items-start gap-3">
@@ -52,6 +60,8 @@ export default function QuestCard({
           taskType={taskType}
           status={status}
           loading={isLoading}
+          opened={opened}
+          onActionClick={handleActionClick}
           onVerify={onVerify}
           onStart={onStart}
         />
@@ -61,10 +71,10 @@ export default function QuestCard({
 }
 
 function QuestActionButton({
-  taskType, status, loading, onVerify, onStart,
+  taskType, status, loading, opened, onActionClick, onVerify, onStart,
 }: {
-  taskType: string; status?: string; loading?: boolean;
-  onVerify: () => void; onStart: () => void;
+  taskType: string; status?: string; loading?: boolean; opened: boolean;
+  onActionClick: () => void; onVerify: () => void; onStart: () => void;
 }) {
   const isPassive = PASSIVE_TYPES.has(taskType);
   if (status === "completed") {
@@ -76,13 +86,26 @@ function QuestActionButton({
   if (loading) {
     return <span className="text-xs text-slate-400">...</span>;
   }
+  
+  if (!opened) {
+    return (
+      <button
+        onClick={onActionClick}
+        className="text-xs font-bold px-3 py-1.5 rounded-full
+          bg-slate-900 text-white active:scale-95 transition-all"
+      >
+        {taskType === "tg_join" ? "Join" : "Start"}
+      </button>
+    );
+  }
+
   return (
     <button
       onClick={isPassive ? onStart : onVerify}
       className="text-xs font-bold px-3 py-1.5 rounded-full
         bg-slate-900 text-white active:scale-95 transition-all"
     >
-      {isPassive ? "Start" : "Verify"}
+      Verify
     </button>
   );
 }

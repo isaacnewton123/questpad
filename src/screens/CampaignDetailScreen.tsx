@@ -16,53 +16,67 @@ export default function CampaignDetailScreen() {
   const state = useCampaignDetail(id);
   const [proofStep, setProofStep] = useState<Step | null>(null);
 
-  function handleStartPassive(stepId: string) {
-    const step = state.steps.find((s) => s.id === stepId);
-    if (step) setProofStep(step);
-  }
-
-  async function handleProofSubmit(proof: string) {
-    if (!proofStep) return;
-    await state.submitProof(proofStep.id, proof);
-    setProofStep(null);
-  }
-
   if (state.loading) return <LoadingView />;
   if (!state.campaign) return <NotFoundView />;
-
-  const canClaim = state.allDone && !state.claimed;
 
   return (
     <div className="pb-nav max-w-md mx-auto">
       <div className="bg-animated" />
-      <Header
-        campaign={state.campaign}
-        onBack={() => navigate("/campaigns")}
-      />
+      <Header campaign={state.campaign} onBack={() => navigate("/campaigns")} />
       <div className="px-4 space-y-4 mt-4">
         <MetadataBar campaign={state.campaign} />
-        <StepList
-          steps={state.steps}
-          completions={state.completions}
-          onVerify={state.handleVerify}
-          onStart={handleStartPassive}
-        />
-        <ClaimSection
-          campaign={state.campaign}
-          canClaim={canClaim}
-          claimed={state.claimed}
-          claiming={state.claiming}
-          onClaim={state.handleClaim}
-        />
+        <CampaignInteractions state={state} campaign={state.campaign} setProofStep={setProofStep} />
       </div>
       {proofStep && (
         <ProofModal
           taskType={proofStep.task_type}
-          onSubmit={handleProofSubmit}
+          onSubmit={async (p) => { await state.submitProof(proofStep.id, p); setProofStep(null); }}
           onClose={() => setProofStep(null)}
         />
       )}
     </div>
+  );
+}
+
+function CampaignInteractions({ state, campaign, setProofStep }: {
+  state: ReturnType<typeof useCampaignDetail>;
+  campaign: Campaign;
+  setProofStep: (step: Step | null) => void;
+}) {
+  async function handleVerifyClick(stepId: string) {
+    const res = await state.handleVerify(stepId);
+    if (res && !res.ok) {
+      if (res.fallback) {
+        alert(res.error || "Falling back to manual proof");
+        const step = state.steps.find((s: Step) => s.id === stepId);
+        if (step) setProofStep(step);
+      } else {
+        alert(res.error || "Verification failed");
+      }
+    }
+  }
+
+  function handleStartPassive(stepId: string) {
+    const step = state.steps.find((s: Step) => s.id === stepId);
+    if (step) setProofStep(step);
+  }
+
+  return (
+    <>
+      <StepList
+        steps={state.steps}
+        completions={state.completions}
+        onVerify={handleVerifyClick}
+        onStart={handleStartPassive}
+      />
+      <ClaimSection
+        campaign={campaign}
+        canClaim={state.allDone && !state.claimed}
+        claimed={state.claimed}
+        claiming={state.claiming}
+        onClaim={state.handleClaim}
+      />
+    </>
   );
 }
 
@@ -138,7 +152,7 @@ function MetadataBar({ campaign }: { campaign: Campaign }) {
 function StepList({ steps, completions, onVerify, onStart }: {
   steps: Step[];
   completions: Record<string, { status: string }>;
-  onVerify: (id: string) => void;
+  onVerify: (id: string) => Promise<void>;
   onStart: (id: string) => void;
 }) {
   return (
@@ -169,6 +183,17 @@ function ClaimSection({ campaign, canClaim, claimed, claiming, onClaim }: {
   claiming: boolean;
   onClaim: () => void;
 }) {
+  const isRaffle = campaign.campaign_type === "raffle";
+
+  if (isRaffle && campaign.is_drawn) {
+    return (
+      <section className="glass-panel p-4 text-center">
+        <p className="text-slate-700 font-bold mb-1">Raffle has concluded! 🎉</p>
+        <p className="text-xs text-slate-500">Check your TON balance in your profile to see if you won!</p>
+      </section>
+    );
+  }
+
   const btnClass = claimed
     ? "bg-emerald-50 text-emerald-600"
     : canClaim
@@ -176,8 +201,8 @@ function ClaimSection({ campaign, canClaim, claimed, claiming, onClaim }: {
       : "bg-slate-100 text-slate-400";
 
   const btnLabel = claimed
-    ? <span className="flex items-center justify-center gap-1"><PiCheck /> Reward Claimed</span>
-    : claiming ? "Claiming..." : "Claim Reward";
+    ? <span className="flex items-center justify-center gap-1"><PiCheck /> {isRaffle ? "Entered Raffle" : "Reward Claimed"}</span>
+    : claiming ? (isRaffle ? "Entering..." : "Claiming...") : (isRaffle ? "Enter Raffle" : "Claim Reward");
 
   return (
     <section className="glass-panel p-4 text-center">

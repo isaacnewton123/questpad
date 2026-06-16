@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 interface ProofModalProps {
   taskType: string;
@@ -31,7 +32,7 @@ export default function ProofModal({
     onSubmit(trimmed);
   }
 
-  return (
+  return createPortal(
     <div
       ref={backdropRef}
       onClick={handleBackdropClick}
@@ -58,7 +59,8 @@ export default function ProofModal({
           disabled={!value.trim()}
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

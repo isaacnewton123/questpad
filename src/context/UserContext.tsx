@@ -10,6 +10,7 @@ export interface UserProfile {
   coins: number;
   is_verified: boolean;
   has_adblocker: boolean;
+  is_admin: boolean;
   bonus_spins: number;
   referrer_id: number | null;
   last_spin_at: string | null;

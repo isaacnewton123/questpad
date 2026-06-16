@@ -18,6 +18,8 @@ interface OfficialStep {
   task_type: string;
   target_url: string;
   sort_order: number;
+  reward_type: string;
+  reward_value: number;
 }
 
 interface OfficialCampaign {
@@ -66,9 +68,9 @@ export function useQuestData() {
   }, []);
 
   const handlers = useDailyHandlers(setData, setLoading, refetchUser);
-  const stepHandlers = useStepHandlers(setData, setLoading);
+  const stepHandlers = useStepHandlers(setData, setLoading, refetchUser);
 
-  return { data, loading, ...handlers, ...stepHandlers };
+  return { data, loading, refetchUser, ...handlers, ...stepHandlers };
 }
 
 function useDailyHandlers(
@@ -79,42 +81,29 @@ function useDailyHandlers(
   const handleCheckin = useCallback(async () => {
     setLoading("checkin");
     const res = await apiFetch("/daily/checkin", "POST");
+    let success = false;
     if (res.ok) {
       setData((s) => ({
         ...s, dailyStatus: { ...s.dailyStatus, checkedIn: true },
       }));
       refetchUser();
+      success = true;
     }
     setLoading(null);
+    return success;
   }, [setData, setLoading, refetchUser]);
 
-  const handleWatchAd = useCallback(async () => {
-    setLoading("ad");
-    await new Promise((r) => setTimeout(r, 2000));
-    const res = await apiFetch("/daily/watch-ad", "POST");
-    if (res.ok) {
-      setData((s) => ({
-        ...s,
-        dailyStatus: {
-          ...s.dailyStatus,
-          adWatches: s.dailyStatus.adWatches + 1,
-        },
-      }));
-      refetchUser();
-    }
-    setLoading(null);
-  }, [setData, setLoading, refetchUser]);
-
-  return { handleCheckin, handleWatchAd };
+  return { handleCheckin };
 }
 
 function useStepHandlers(
   setData: React.Dispatch<React.SetStateAction<QuestState>>,
-  setLoading: React.Dispatch<React.SetStateAction<string | null>>
+  setLoading: React.Dispatch<React.SetStateAction<string | null>>,
+  refetchUser: () => void
 ) {
   const handleVerifyStep = useCallback(async (stepId: string) => {
     setLoading(stepId);
-    const res = await apiFetch<{ status: string }>(
+    const res = await apiFetch<{ status?: string, error?: string }>(
       `/quests/${stepId}/verify`, "POST"
     );
     if (res.ok) {
@@ -125,9 +114,12 @@ function useStepHandlers(
           [stepId]: { status: "completed" },
         },
       }));
+      refetchUser();
+    } else {
+      alert(res.data.error || "Verification failed. Make sure you completed the task!");
     }
     setLoading(null);
-  }, [setData, setLoading]);
+  }, [setData, setLoading, refetchUser]);
 
   const submitProof = useCallback(async (
     stepId: string, proof: string

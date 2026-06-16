@@ -23,6 +23,7 @@ interface Campaign {
   current_completions: number;
   participant_count: number;
   expires_at: string;
+  is_drawn: boolean;
 }
 
 type Completions = Record<string, { status: string }>;
@@ -83,14 +84,16 @@ function useCampaignActions(
   const { refetchUser } = useUser();
 
   const handleVerify = useCallback(async (stepId: string) => {
-    const res = await apiFetch<{ status: string }>(
+    const res = await apiFetch<{ status: string, fallback?: boolean, error?: string }>(
       `/quests/${stepId}/verify`, "POST"
     );
     if (res.ok) {
       setCompletions((prev) => ({
         ...prev, [stepId]: { status: "completed" },
       }));
+      return { ok: true };
     }
+    return { ok: false, fallback: res.data?.fallback, error: res.data?.error };
   }, [setCompletions]);
 
   const submitProof = useCallback(async (stepId: string, proof: string) => {

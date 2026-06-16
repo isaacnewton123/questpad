@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PiSpinnerBallFill, PiShieldCheck, PiPaintBrush } from "react-icons/pi";
+import { PiSpinnerBallFill, PiShieldCheck, PiStorefront, PiPaintBrush } from "react-icons/pi";
 import { PiCoinsFill } from "react-icons/pi";
 import { useUser } from "../context/useUser";
 import { apiFetch } from "../lib/api";
@@ -69,7 +69,9 @@ export default function StoreScreen() {
       <div className="bg-animated" />
 
       <header className="text-center mb-2">
-        <h1 className="text-2xl font-bold text-gradient">Store</h1>
+        <h1 className="text-2xl font-bold text-gradient flex items-center justify-center gap-2">
+          <PiStorefront /> Store
+        </h1>
         <p className="text-xs text-slate-500 mt-1">
           Spend your Coins on power-ups
         </p>
@@ -105,7 +107,7 @@ function StoreCard({ item, coins, buying, onBuy }: {
   return (
     <div className="glass-panel p-5 flex items-start gap-4">
       <div className={`w-11 h-11 rounded-2xl ${item.bgColor} flex
-        items-center justify-center flex-shrink-0 border border-white/50`}>
+        items-center justify-center shrink-0 border border-white/50`}>
         <Icon size={22} className={item.color} />
       </div>
       <div className="flex-1 min-w-0">
@@ -121,7 +123,7 @@ function StoreCard({ item, coins, buying, onBuy }: {
       <button
         onClick={onBuy}
         disabled={!canAfford || buying}
-        className={`flex-shrink-0 text-xs font-bold px-4 py-2 rounded-full
+        className={`shrink-0 text-xs font-bold px-4 py-2 rounded-full
           transition-all ${
             canAfford
               ? "bg-slate-900 text-white hover:bg-slate-700 active:scale-95"

@@ -64,7 +64,7 @@ function ModalCard({
       <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
         {isBigWin ? <><PiConfetti className="inline mb-0.5" /> Jackpot!</> : "You Won"}
       </p>
-      <p className="text-3xl font-bold text-slate-800 break-words w-full"
+      <p className="text-3xl font-bold text-slate-800 wrap-break-word w-full"
         style={{ lineHeight: 1.1 }}>
         {prizeName}
       </p>
