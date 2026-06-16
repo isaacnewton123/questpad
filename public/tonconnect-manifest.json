@@ -1,7 +1,7 @@
 {
-  "url": "https://questpad.hanifmaulana135.workers.dev",
+  "url": "https://questpad.netlify.app",
   "name": "QuestPad",
-  "iconUrl": "https://questpad.hanifmaulana135.workers.dev/logo-only.webp",
-  "termsOfUseUrl": "https://questpad.hanifmaulana135.workers.dev/terms",
-  "privacyPolicyUrl": "https://questpad.hanifmaulana135.workers.dev/privacy"
+  "iconUrl": "https://questpad.netlify.app/logo-only.webp",
+  "termsOfUseUrl": "https://questpad.netlify.app/terms",
+  "privacyPolicyUrl": "https://questpad.netlify.app/privacy"
 }
