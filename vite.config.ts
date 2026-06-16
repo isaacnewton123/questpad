@@ -3,20 +3,18 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import checker from 'vite-plugin-checker'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    checker({
-      typescript: {
-        tsconfigPath: './tsconfig.app.json',
-      },
-      eslint: {
-        lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
-        useFlatConfig: true,
-      }
-    }),
-  ],
+  plugins: [react(), tailwindcss(), checker({
+    typescript: {
+      tsconfigPath: './tsconfig.app.json',
+    },
+    eslint: {
+      lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
+      useFlatConfig: true,
+    }
+  }), cloudflare()],
   server: {
     allowedHosts: true,
     proxy: {
