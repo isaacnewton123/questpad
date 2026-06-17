@@ -182,7 +182,7 @@ function InviteLinkSection({ telegramId }: { telegramId: number | null }) {
         </button>
       </div>
       <p className="text-[10px] text-blue-600/70 mt-2">
-        Friends must complete the Official Quests & connect a wallet to qualify.
+        Friends must connect a wallet, complete Official Quests, and watch 3 ads to qualify.
       </p>
     </div>
   );
