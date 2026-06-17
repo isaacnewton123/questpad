@@ -111,14 +111,23 @@ function Header({ campaign, onBack }: {
       >
         <PiArrowLeft /> Back
       </button>
-      <h1 className="text-xl font-bold text-gradient">
-        {campaign.title}
-      </h1>
-      {campaign.description && (
-        <p className="text-sm text-slate-500 mt-1">
-          {campaign.description}
-        </p>
-      )}
+      <div className="flex items-center gap-3">
+        {campaign.logo_url && (
+          <div className="w-12 h-12 rounded-2xl overflow-hidden shrink-0 border border-slate-100 bg-white">
+            <img src={campaign.logo_url} alt="Sponsor Logo" className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div>
+          <h1 className="text-xl font-bold text-gradient">
+            {campaign.title}
+          </h1>
+          {campaign.description && (
+            <p className="text-sm text-slate-500 mt-1">
+              {campaign.description}
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

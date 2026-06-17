@@ -15,6 +15,7 @@ export interface CampaignData {
   current_completions: number;
   participant_count: number;
   expires_at: string;
+  logo_url?: string;
   quests: Array<{ id: string }>;
 }
 
@@ -32,7 +33,7 @@ export default function CampaignCard({
       className="campaign-card w-full text-left"
     >
       <div className="flex items-start gap-3">
-        <CampaignIcon type={campaign.campaign_type} />
+        <CampaignIcon type={campaign.campaign_type} logo_url={campaign.logo_url} />
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-bold text-slate-800 truncate">
             {campaign.title}
@@ -73,7 +74,15 @@ export default function CampaignCard({
   );
 }
 
-function CampaignIcon({ type }: { type: string }) {
+function CampaignIcon({ type, logo_url }: { type: string, logo_url?: string }) {
+  if (logo_url) {
+    return (
+      <div className="w-10 h-10 rounded-2xl overflow-hidden shrink-0 border border-slate-100 bg-white">
+        <img src={logo_url} alt="Sponsor Logo" className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
   const Icon = type === "raffle" ? PiTicket : PiPersonSimpleRun;
   return (
     <div className="w-10 h-10 rounded-2xl bg-blue-50

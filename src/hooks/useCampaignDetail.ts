@@ -24,6 +24,7 @@ interface Campaign {
   participant_count: number;
   expires_at: string;
   is_drawn: boolean;
+  logo_url?: string;
 }
 
 type Completions = Record<string, { status: string }>;
