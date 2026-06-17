@@ -52,7 +52,7 @@ export default function AdminScreen() {
       </div>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 glass-panel"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.04)]"
         style={{
           borderRadius: "24px 24px 0 0",
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
