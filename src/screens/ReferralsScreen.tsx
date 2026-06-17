@@ -153,7 +153,7 @@ function FriendsList({ total, friends, loading }: { total: number, friends: Frie
 function InviteLinkSection({ telegramId }: { telegramId: number | null }) {
   const [copied, setCopied] = useState(false);
   const botUsername = "QuestPadBot"; // Update this with actual bot username
-  const refLink = `https://t.me/${botUsername}?startapp=ref_${telegramId ?? ""}`;
+  const refLink = `https://t.me/${botUsername}?start=ref_${telegramId ?? ""}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(refLink);
