@@ -117,6 +117,12 @@ function FriendsList({ total, friends, loading }: { total: number, friends: Frie
         <span>Invited Friends</span>
         <span className="text-xs font-normal text-slate-500">{total} Total</span>
       </h2>
+      
+      <div className="bg-blue-50/50 border border-blue-100/50 p-3 rounded-xl mb-4 text-[11px] text-slate-600">
+        <strong className="text-blue-600 block mb-0.5">What is a Qualified Referral?</strong>
+        Your friend must connect a wallet, complete the main QuestPad Official campaign, and watch 3 ads to become Qualified.
+      </div>
+
       {loading ? (
         <p className="text-xs text-slate-400 text-center py-4">Loading friends...</p>
       ) : friends.length === 0 ? (
@@ -139,7 +145,7 @@ function FriendsList({ total, friends, loading }: { total: number, friends: Frie
               ) : (
                 <div className="flex items-center gap-1 text-slate-400">
                   <PiClockCountdownFill size={16} />
-                  <span className="text-xs font-bold">Pending</span>
+                  <span className="text-xs font-bold">Pending Actions</span>
                 </div>
               )}
             </div>
