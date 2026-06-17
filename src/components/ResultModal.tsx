@@ -50,7 +50,7 @@ function ModalCard({
 
   return (
     <div
-      className="glass-panel p-8 text-center flex flex-col items-center
+      className="bg-white rounded-[32px] shadow-xl border border-slate-100 p-8 text-center flex flex-col items-center
         max-w-[340px] w-full animate-[scaleIn_0.5s_ease]"
       onClick={(e) => e.stopPropagation()}
     >
