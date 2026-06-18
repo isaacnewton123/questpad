@@ -23,14 +23,17 @@ const ICONS: Record<string, typeof PiGlobe> = {
 };
 
 const PASSIVE_TYPES = new Set([
-  "twitter_follow", "twitter_retweet", "ig_follow", "yt_watch"
+  "twitter_follow", "twitter_retweet", "ig_follow"
 ]);
+
+const INSTANT_TYPES = new Set(["yt_watch"]);
 
 export default function StepCard({
   index, step, status, onVerify, onStart,
 }: StepCardProps) {
   const Icon = ICONS[step.task_type] ?? PiGlobe;
   const isPassive = PASSIVE_TYPES.has(step.task_type);
+  const isInstant = INSTANT_TYPES.has(step.task_type);
   const [cooldown, setCooldown] = useState(0);
   const [opened, setOpened] = useState(false);
 
@@ -48,6 +51,7 @@ export default function StepCard({
     window.open(step.target_url, "_blank");
     setOpened(true);
     if (isPassive) setCooldown(15);
+    if (isInstant) setCooldown(5);
   }
 
   function handleVerifyClick() {
@@ -140,7 +144,7 @@ function ActionButton({
   if (!opened) {
     return (
       <button onClick={onStart} className="step-btn-secondary flex items-center justify-center gap-1">
-        {taskType === "tg_join" ? "Join" : "Start"} <PiArrowRight />
+        {taskType === "tg_join" ? "Join" : taskType === "yt_watch" ? "Watch" : "Start"} <PiArrowRight />
       </button>
     );
   }
