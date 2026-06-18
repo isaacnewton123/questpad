@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { PiTelegramLogo, PiXLogo, PiGlobe, PiCheck, PiArrowRight } from "react-icons/pi";
+import { PiTelegramLogo, PiXLogo, PiGlobe, PiCheck, PiArrowRight, PiYoutubeLogo } from "react-icons/pi";
 
 interface StepCardProps {
   index: number;
@@ -19,10 +19,11 @@ const ICONS: Record<string, typeof PiGlobe> = {
   tg_join: PiTelegramLogo,
   twitter_follow: PiXLogo,
   twitter_retweet: PiXLogo,
+  yt_watch: PiYoutubeLogo,
 };
 
 const PASSIVE_TYPES = new Set([
-  "twitter_follow", "twitter_retweet", "ig_follow",
+  "twitter_follow", "twitter_retweet", "ig_follow", "yt_watch"
 ]);
 
 export default function StepCard({
