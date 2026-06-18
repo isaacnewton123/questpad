@@ -50,8 +50,7 @@ export default function StepCard({
   function handleStartClick() {
     window.open(step.target_url, "_blank");
     setOpened(true);
-    if (isPassive) setCooldown(15);
-    if (isInstant) setCooldown(5);
+    if (isInstant) setCooldown(15);
   }
 
   function handleVerifyClick() {
