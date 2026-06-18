@@ -12,6 +12,7 @@ interface StepCardProps {
   };
   status?: string;
   onVerify: (stepId: string) => void;
+  onStart: (stepId: string) => void;
 }
 
 const ICONS: Record<string, typeof PiGlobe> = {
@@ -26,7 +27,7 @@ const PASSIVE_TYPES = new Set([
 ]);
 
 export default function StepCard({
-  index, step, status, onVerify,
+  index, step, status, onVerify, onStart,
 }: StepCardProps) {
   const Icon = ICONS[step.task_type] ?? PiGlobe;
   const isPassive = PASSIVE_TYPES.has(step.task_type);
@@ -50,7 +51,11 @@ export default function StepCard({
   }
 
   function handleVerifyClick() {
-    onVerify(step.id);
+    if (isPassive) {
+      onStart(step.id);
+    } else {
+      onVerify(step.id);
+    }
   }
 
   return (

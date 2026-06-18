@@ -56,7 +56,10 @@ function CampaignInteractions({ state, campaign, setProofStep }: {
     }
   }
 
-
+  function handleStartPassive(stepId: string) {
+    const step = state.steps.find((s: Step) => s.id === stepId);
+    if (step) setProofStep(step);
+  }
 
   return (
     <>
@@ -64,6 +67,7 @@ function CampaignInteractions({ state, campaign, setProofStep }: {
         steps={state.steps}
         completions={state.completions}
         onVerify={handleVerifyClick}
+        onStart={handleStartPassive}
       />
       <ClaimSection
         campaign={campaign}
@@ -154,10 +158,11 @@ function MetadataBar({ campaign }: { campaign: Campaign }) {
   );
 }
 
-function StepList({ steps, completions, onVerify }: {
+function StepList({ steps, completions, onVerify, onStart }: {
   steps: Step[];
   completions: Record<string, { status: string }>;
   onVerify: (id: string) => Promise<void>;
+  onStart: (id: string) => void;
 }) {
   return (
     <section>
@@ -172,6 +177,7 @@ function StepList({ steps, completions, onVerify }: {
             step={step}
             status={completions[step.id]?.status}
             onVerify={onVerify}
+            onStart={onStart}
           />
         ))}
       </div>
