@@ -51,11 +51,7 @@ export default function StepCard({
   }
 
   function handleVerifyClick() {
-    if (isPassive) {
-      onStart(step.id);
-    } else {
-      onVerify(step.id);
-    }
+    onVerify(step.id);
   }
 
   return (
