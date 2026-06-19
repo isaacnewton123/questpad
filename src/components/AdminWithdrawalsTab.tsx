@@ -14,17 +14,18 @@ function PaymentSummary({ w }: { w: AdminWithdrawal }) {
   );
 }
 
-function TxHashInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function ModalInput({ value, onChange, placeholder, label }: {
+  value: string; onChange: (v: string) => void;
+  placeholder: string; label: string;
+}) {
   return (
     <div>
-      <label className="text-xs font-semibold text-slate-600 block mb-1">
-        Transaction Hash / Signature
-      </label>
+      <label className="text-xs font-semibold text-slate-600 block mb-1">{label}</label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Paste tx hash here..."
+        placeholder={placeholder}
         className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm
           font-mono focus:outline-none focus:ring-2 focus:ring-blue-300
           placeholder:text-slate-300"
@@ -33,9 +34,26 @@ function TxHashInput({ value, onChange }: { value: string; onChange: (v: string)
   );
 }
 
-function TxHashModal({
-  withdrawal, onSubmit, onClose,
-}: {
+function ModalShell({ title, onClose, children }: {
+  title: string; onClose: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 animate-slide-up">
+        <div className="flex justify-between items-center">
+          <h3 className="font-bold text-slate-800">{title}</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+            <PiX size={20} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function TxHashModal({ withdrawal, onSubmit, onClose }: {
   withdrawal: AdminWithdrawal;
   onSubmit: (id: string, txHash: string) => void;
   onClose: () => void;
@@ -51,36 +69,59 @@ function TxHashModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4">
-      <div className="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 animate-slide-up">
-        <div className="flex justify-between items-center">
-          <h3 className="font-bold text-slate-800">Confirm Payment</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
-            <PiX size={20} />
-          </button>
-        </div>
-        <PaymentSummary w={withdrawal} />
-        <TxHashInput value={txHash} onChange={setTxHash} />
-        <button
-          onClick={handleSubmit}
-          disabled={!txHash.trim() || submitting}
-          className="w-full py-3 bg-emerald-500 text-white font-bold text-sm rounded-xl
-            hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed
-            flex items-center justify-center gap-2 transition-colors"
-        >
-          <PiPaperPlaneTilt />
-          {submitting ? "Submitting..." : "Mark as Paid"}
-        </button>
-      </div>
-    </div>
+    <ModalShell title="Confirm Payment" onClose={onClose}>
+      <PaymentSummary w={withdrawal} />
+      <ModalInput value={txHash} onChange={setTxHash} label="Transaction Hash / Signature" placeholder="Paste tx hash here..." />
+      <button
+        onClick={handleSubmit}
+        disabled={!txHash.trim() || submitting}
+        className="w-full py-3 bg-emerald-500 text-white font-bold text-sm rounded-xl
+          hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed
+          flex items-center justify-center gap-2 transition-colors"
+      >
+        <PiPaperPlaneTilt />
+        {submitting ? "Submitting..." : "Mark as Paid"}
+      </button>
+    </ModalShell>
   );
 }
 
-function WithdrawalCard({
-  w, onReject, onComplete,
-}: {
+function RejectModal({ withdrawal, onSubmit, onClose }: {
+  withdrawal: AdminWithdrawal;
+  onSubmit: (id: string, reason: string) => void;
+  onClose: () => void;
+}) {
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit() {
+    if (!reason.trim()) return;
+    setSubmitting(true);
+    await onSubmit(withdrawal.id, reason.trim());
+    setSubmitting(false);
+  }
+
+  return (
+    <ModalShell title="Reject Withdrawal" onClose={onClose}>
+      <PaymentSummary w={withdrawal} />
+      <ModalInput value={reason} onChange={setReason} label="Rejection Reason" placeholder="Enter reason for rejection..." />
+      <button
+        onClick={handleSubmit}
+        disabled={!reason.trim() || submitting}
+        className="w-full py-3 bg-red-500 text-white font-bold text-sm rounded-xl
+          hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed
+          flex items-center justify-center gap-2 transition-colors"
+      >
+        <PiXCircle />
+        {submitting ? "Rejecting..." : "Reject & Refund"}
+      </button>
+    </ModalShell>
+  );
+}
+
+function WithdrawalCard({ w, onReject, onComplete }: {
   w: AdminWithdrawal;
-  onReject: (id: string) => void;
+  onReject: (w: AdminWithdrawal) => void;
   onComplete: (w: AdminWithdrawal) => void;
 }) {
   return (
@@ -95,17 +136,10 @@ function WithdrawalCard({
           <span className="text-xs text-slate-400 block -mt-1">TON</span>
         </div>
       </div>
-      
-      <div className="bg-slate-50 p-2 rounded-lg flex justify-between items-center mb-3 border border-slate-100">
-        <span className="text-xs text-slate-500">Qualified Referrals</span>
-        <span className={`text-xs font-bold ${w.qualified_referrals >= 3 ? "text-emerald-600" : "text-red-500"}`}>
-          {w.qualified_referrals}
-        </span>
-      </div>
-
+      <ReferralBadge count={w.qualified_referrals} />
       <div className="flex gap-2">
         <button
-          onClick={() => onReject(w.id)}
+          onClick={() => onReject(w)}
           className="flex-1 py-2 bg-red-50 text-red-600 font-bold text-sm rounded-xl hover:bg-red-100 flex items-center justify-center gap-1 transition-colors"
         >
           <PiXCircle /> Reject
@@ -121,10 +155,22 @@ function WithdrawalCard({
   );
 }
 
+function ReferralBadge({ count }: { count: number }) {
+  return (
+    <div className="bg-slate-50 p-2 rounded-lg flex justify-between items-center mb-3 border border-slate-100">
+      <span className="text-xs text-slate-500">Qualified Referrals</span>
+      <span className={`text-xs font-bold ${count >= 3 ? "text-emerald-600" : "text-red-500"}`}>
+        {count}
+      </span>
+    </div>
+  );
+}
+
 export function WithdrawalsTab({ user }: { user: NonNullable<ReturnType<typeof useUser>["user"]> }) {
   const [withdrawals, setWithdrawals] = useState<AdminWithdrawal[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeW, setActiveW] = useState<AdminWithdrawal | null>(null);
+  const [rejectW, setRejectW] = useState<AdminWithdrawal | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -143,14 +189,18 @@ export function WithdrawalsTab({ user }: { user: NonNullable<ReturnType<typeof u
       setWithdrawals((p) => p.filter((w) => w.id !== id));
       setActiveW(null);
     } else {
-      alert("Failed to mark as paid. Please try again.");
+      alert("Failed to mark as paid.");
     }
   };
 
-  const handleReject = async (id: string) => {
-    if (!confirm("Reject and refund to user?")) return;
-    const res = await apiFetch(`/admin/withdrawals/${id}/reject`, "POST");
-    if (res.ok) setWithdrawals((p) => p.filter((w) => w.id !== id));
+  const handleReject = async (id: string, reason: string) => {
+    const res = await apiFetch(`/admin/withdrawals/${id}/reject`, "POST", { reason });
+    if (res.ok) {
+      setWithdrawals((p) => p.filter((w) => w.id !== id));
+      setRejectW(null);
+    } else {
+      alert("Failed to reject.");
+    }
   };
 
   if (loading) return <div className="text-center text-slate-500 py-10">Loading...</div>;
@@ -160,16 +210,11 @@ export function WithdrawalsTab({ user }: { user: NonNullable<ReturnType<typeof u
     <>
       <div className="space-y-4">
         {withdrawals.map((w) => (
-          <WithdrawalCard key={w.id} w={w} onReject={handleReject} onComplete={setActiveW} />
+          <WithdrawalCard key={w.id} w={w} onReject={setRejectW} onComplete={setActiveW} />
         ))}
       </div>
-      {activeW && (
-        <TxHashModal
-          withdrawal={activeW}
-          onSubmit={handleComplete}
-          onClose={() => setActiveW(null)}
-        />
-      )}
+      {activeW && <TxHashModal withdrawal={activeW} onSubmit={handleComplete} onClose={() => setActiveW(null)} />}
+      {rejectW && <RejectModal withdrawal={rejectW} onSubmit={handleReject} onClose={() => setRejectW(null)} />}
     </>
   );
 }

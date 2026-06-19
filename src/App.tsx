@@ -9,6 +9,7 @@ import ProfileScreen from "./screens/ProfileScreen";
 import AdminScreen from "./screens/AdminScreen";
 import AdminApproveScreen from "./screens/AdminApproveScreen";
 import ReferralsScreen from "./screens/ReferralsScreen";
+import WithdrawalHistoryScreen from "./screens/WithdrawalHistoryScreen";
 import TermsScreen from "./screens/TermsScreen";
 import PrivacyScreen from "./screens/PrivacyScreen";
 import { useUser } from "./context/useUser";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/store" element={<StoreScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/referrals" element={<ReferralsScreen />} />
+        <Route path="/withdrawals" element={<WithdrawalHistoryScreen />} />
         <Route path="/admin" element={<AdminScreen />} />
         <Route path="/admin/approve/:id" element={<AdminApproveScreen />} />
         <Route path="/terms" element={<TermsScreen />} />

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { PiArrowLeft, PiTicket, PiListChecks, PiWallet } from "react-icons/pi";
+import { PiArrowLeft, PiTicket, PiListChecks, PiWallet, PiClockCounterClockwise } from "react-icons/pi";
 import { useUser } from "../context/useUser";
 import { apiFetch } from "../lib/api";
 import { WithdrawalsTab } from "../components/AdminWithdrawalsTab";
+import { AdminHistoryTab } from "../components/AdminHistoryTab";
 
 export interface Submission {
   id: string;
@@ -36,19 +37,16 @@ export interface AdminWithdrawal {
 
 export default function AdminScreen() {
   const { user } = useUser();
-  const [tab, setTab] = useState<"proofs" | "campaigns" | "withdrawals">("proofs");
+  const [tab, setTab] = useState<"proofs" | "campaigns" | "withdrawals" | "history">("proofs");
   if (!user?.is_admin) return <Navigate to="/" replace />;
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
       <AdminHeader />
       <div className="max-w-md mx-auto p-4 space-y-4 mt-2">
-        {tab === "proofs" ? (
-          <ProofsTab user={user} />
-        ) : tab === "withdrawals" ? (
-          <WithdrawalsTab user={user} />
-        ) : (
-          <CampaignsTab user={user} />
-        )}
+        {tab === "proofs" && <ProofsTab user={user} />}
+        {tab === "withdrawals" && <WithdrawalsTab user={user} />}
+        {tab === "history" && <AdminHistoryTab />}
+        {tab === "campaigns" && <CampaignsTab user={user} />}
       </div>
 
       <nav
@@ -62,12 +60,13 @@ export default function AdminScreen() {
           {[
             { id: "proofs", icon: PiListChecks, label: "Proofs" },
             { id: "withdrawals", icon: PiWallet, label: "Payouts" },
+            { id: "history", icon: PiClockCounterClockwise, label: "History" },
             { id: "campaigns", icon: PiTicket, label: "Raffles" },
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => setTab(item.id as "proofs" | "withdrawals" | "campaigns")}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 transition-all duration-200 ${
+              onClick={() => setTab(item.id as typeof tab)}
+              className={`flex flex-col items-center gap-0.5 px-1.5 py-1.5 transition-all duration-200 ${
                 tab === item.id
                   ? "text-blue-500 scale-105"
                   : "text-slate-500 hover:text-slate-700"

@@ -239,7 +239,14 @@ function BalanceSection({
         onWithdraw={handleWithdraw}
       />
 
-      {/* Referral Modal */}
+      <Link
+        to="/withdrawals"
+        className="block text-center text-xs font-semibold text-blue-500
+          mt-3 hover:text-blue-600 transition-colors"
+      >
+        View Withdrawal History →
+      </Link>
+
       {showReferralModal && (
         <ReferralModal onClose={() => setShowReferralModal(false)} />
       )}
