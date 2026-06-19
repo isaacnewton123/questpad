@@ -39,7 +39,7 @@ function ModalShell({ title, onClose, children }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-60 flex items-end justify-center p-4 pb-10">
       <div className="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 animate-slide-up">
         <div className="flex justify-between items-center">
           <h3 className="font-bold text-slate-800">{title}</h3>
