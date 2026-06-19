@@ -1,6 +1,6 @@
 import { SiTon } from "react-icons/si";
 import { PiCoinsFill } from "react-icons/pi";
-import { useUser } from "../context/useUser";
+import { useUser } from "../../context/useUser";
 
 export default function BalanceBar() {
   const { user } = useUser();
@@ -25,9 +25,7 @@ export default function BalanceBar() {
       >
         <PiCoinsFill className="text-amber-500" size={16} />
         <span className="text-sm font-bold text-slate-800">{coins}</span>
-        <span className="text-[10px] font-semibold text-slate-400">
-          Coins
-        </span>
+        <span className="text-[10px] font-semibold text-slate-400">Coins</span>
       </div>
     </div>
   );

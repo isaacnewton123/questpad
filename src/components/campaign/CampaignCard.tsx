@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { PiChartBar, PiTicket, PiPersonSimpleRun } from "react-icons/pi";
 import CountdownBadge from "./CountdownBadge";
-import RewardBadge from "./RewardBadge";
+import RewardBadge from "../ui/RewardBadge";
 
 export interface CampaignData {
   id: string;

@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import BottomNav from "./components/BottomNav";
+import BottomNav from "./components/ui/BottomNav";
 import SpinScreen from "./screens/SpinScreen";
 import QuestsScreen from "./screens/QuestsScreen";
 import CampaignsScreen from "./screens/CampaignsScreen";

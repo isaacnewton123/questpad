@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PiTelegramLogo, PiXLogo, PiGlobe, PiCheck } from "react-icons/pi";
-import RewardBadge from "./RewardBadge";
+import RewardBadge from "../ui/RewardBadge";
 
 interface QuestCardProps {
   title: string;

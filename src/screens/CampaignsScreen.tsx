@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { PiRocketLaunch } from "react-icons/pi";
-import CampaignCard, { type CampaignData } from "../components/CampaignCard";
+import CampaignCard, { type CampaignData } from "../components/campaign/CampaignCard";
 import { apiFetch } from "../lib/api";
 
 interface CampaignsResponse {

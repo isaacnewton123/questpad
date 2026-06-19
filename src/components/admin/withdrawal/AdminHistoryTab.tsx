@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PiCheckCircle, PiXCircle } from "react-icons/pi";
-import { apiFetch } from "../lib/api";
+import { apiFetch } from "../../../lib/api";
 
 interface HistoryItem {
   id: string;
@@ -14,14 +14,17 @@ interface HistoryItem {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const styles = status === "confirmed"
-    ? "bg-emerald-50 text-emerald-600"
-    : "bg-red-50 text-red-600";
+  const styles =
+    status === "confirmed"
+      ? "bg-emerald-50 text-emerald-600"
+      : "bg-red-50 text-red-600";
   const Icon = status === "confirmed" ? PiCheckCircle : PiXCircle;
   const label = status === "confirmed" ? "Paid" : "Rejected";
 
   return (
-    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${styles}`}>
+    <span
+      className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${styles}`}
+    >
       <Icon size={12} /> {label}
     </span>
   );
@@ -38,14 +41,18 @@ function HistoryCard({ item }: { item: HistoryItem }) {
           <p className="text-[10px] text-slate-400 mt-0.5">{date}</p>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <span className="text-sm font-bold text-blue-600">{item.amount_net.toFixed(3)} TON</span>
+          <span className="text-sm font-bold text-blue-600">
+            {item.amount_net.toFixed(3)} TON
+          </span>
           <StatusBadge status={item.status} />
         </div>
       </div>
       {item.tx_hash && (
         <div className="bg-slate-50 p-2 rounded-lg mt-2 border border-slate-100">
           <p className="text-[10px] text-slate-500">Tx Hash</p>
-          <p className="text-[10px] font-mono text-slate-600 break-all">{item.tx_hash}</p>
+          <p className="text-[10px] font-mono text-slate-600 break-all">
+            {item.tx_hash}
+          </p>
         </div>
       )}
       {item.reject_reason && (
@@ -65,16 +72,24 @@ export function AdminHistoryTab() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const res = await apiFetch<{ history: HistoryItem[] }>("/admin/withdrawals/history");
+      const res = await apiFetch<{ history: HistoryItem[] }>(
+        "/admin/withdrawals/history",
+      );
       if (!cancelled && res.ok) setHistory(res.data?.history ?? []);
       if (!cancelled) setLoading(false);
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  if (loading) return <div className="text-center text-slate-500 py-10">Loading...</div>;
-  if (history.length === 0) return <div className="text-center text-slate-400 py-12">No history yet.</div>;
+  if (loading)
+    return <div className="text-center text-slate-500 py-10">Loading...</div>;
+  if (history.length === 0)
+    return (
+      <div className="text-center text-slate-400 py-12">No history yet.</div>
+    );
 
   return (
     <div className="space-y-3">

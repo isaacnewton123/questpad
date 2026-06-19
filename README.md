@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# QuestPad Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Telegram Mini App frontend for **QuestPad** — a play-to-earn quest platform on the TON blockchain. Built with React 19, Vite, Tailwind CSS v4, and TypeScript.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Framework:** React 19 + TypeScript 6
+- **Bundler:** Vite 8
+- **Styling:** Tailwind CSS v4 (`@tailwindcss/vite`)
+- **Routing:** React Router v7
+- **Wallet:** TON Connect UI React v3
+- **Telegram SDK:** `@twa-dev/sdk` v8
+- **Icons:** Phosphor Icons (`react-icons/pi`)
+- **Linting:** ESLint 10 + `eslint-plugin-ai-guardrails`
+- **Database Client:** Supabase JS (read-only, for spin config)
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [Bun](https://bun.sh/) or Node.js 20+
+- Supabase project (for `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`)
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd Frontend
+bun install
+cp .env.local.example .env.local  # fill in your env vars
+bun run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Command | Description |
+|---|---|
+| `bun run dev` | Start Vite dev server |
+| `bun run build` | Typecheck + lint + production build |
+| `bun run lint` | ESLint with AI guardrails |
+| `bun run typecheck` | TypeScript strict type checking |
+| `bun run preview` | Preview production build locally |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Structure
+
 ```
+src/
+├── App.tsx              # Router + layout
+├── main.tsx             # Entry point (TonConnect + React)
+├── index.css            # Tailwind v4 + design tokens
+├── components/
+│   ├── ui/              # Shared: BottomNav, BalanceBar, LoadingView, RewardBadge
+│   ├── admin/           # Admin panel (proof/, withdrawal/, campaign/)
+│   ├── spin/            # Spin wheel engine
+│   ├── quest/           # Daily + official quest components
+│   ├── campaign/        # Campaign detail components
+│   ├── profile/         # Profile page (wallet/, balance/)
+│   ├── referral/        # Invite + leaderboard
+│   └── store/           # Store item card
+├── screens/             # Route-level pages (all ≤77 lines)
+├── hooks/               # Custom React hooks
+├── types/               # Shared TypeScript interfaces
+├── lib/                 # API client, Supabase client
+├── context/             # UserContext (global state)
+└── constants/           # Static data (terms, privacy)
+```
+
+## Key Screens
+
+| Route | Screen | Description |
+|---|---|---|
+| `/` | SpinScreen | Daily spin wheel with TON/Coin prizes |
+| `/quests` | QuestsScreen | Daily tasks + official quest board |
+| `/campaigns` | CampaignsScreen | Partner campaigns (FCFS/Raffle) |
+| `/campaigns/:id` | CampaignDetailScreen | Multi-step campaign tasks |
+| `/store` | StoreScreen | Spend coins on power-ups |
+| `/profile` | ProfileScreen | Wallet, balance, withdrawal |
+| `/referrals` | ReferralsScreen | Invite link + leaderboard |
+| `/withdrawals` | WithdrawalHistoryScreen | User payout history |
+| `/admin` | AdminScreen | Admin panel (proofs/payouts/raffles) |
+
+## AI Guardrails
+
+This project uses `eslint-plugin-ai-guardrails` to enforce:
+- Files ≤ 300 lines, functions ≤ 50 lines
+- Comment density ≤ 20% of file lines
+- No orphan TODOs without issue tracker links
+
+See [agent.md](agent.md) for full rules.
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `VITE_SUPABASE_URL` | Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `VITE_API_BASE` | Backend Edge Function base URL |
