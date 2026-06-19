@@ -1,17 +1,87 @@
 import { useEffect, useState } from "react";
-import { PiCheckCircle, PiXCircle } from "react-icons/pi";
+import { PiCheckCircle, PiXCircle, PiX, PiPaperPlaneTilt } from "react-icons/pi";
 import { apiFetch } from "../lib/api";
 import { useUser } from "../context/useUser";
 import type { AdminWithdrawal } from "../screens/AdminScreen";
 
+function PaymentSummary({ w }: { w: AdminWithdrawal }) {
+  return (
+    <div className="bg-slate-50 p-3 rounded-xl text-xs space-y-1">
+      <p><span className="text-slate-500">To:</span> <span className="font-mono font-bold text-slate-700 break-all">@{w.username}</span></p>
+      <p><span className="text-slate-500">Wallet:</span> <span className="font-mono text-slate-600 break-all">{w.wallet_address}</span></p>
+      <p><span className="text-slate-500">Amount:</span> <span className="font-bold text-blue-600">{w.amount_net.toFixed(3)} TON</span></p>
+    </div>
+  );
+}
+
+function TxHashInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="text-xs font-semibold text-slate-600 block mb-1">
+        Transaction Hash / Signature
+      </label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Paste tx hash here..."
+        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm
+          font-mono focus:outline-none focus:ring-2 focus:ring-blue-300
+          placeholder:text-slate-300"
+      />
+    </div>
+  );
+}
+
+function TxHashModal({
+  withdrawal, onSubmit, onClose,
+}: {
+  withdrawal: AdminWithdrawal;
+  onSubmit: (id: string, txHash: string) => void;
+  onClose: () => void;
+}) {
+  const [txHash, setTxHash] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit() {
+    if (!txHash.trim()) return;
+    setSubmitting(true);
+    await onSubmit(withdrawal.id, txHash.trim());
+    setSubmitting(false);
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 animate-slide-up">
+        <div className="flex justify-between items-center">
+          <h3 className="font-bold text-slate-800">Confirm Payment</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+            <PiX size={20} />
+          </button>
+        </div>
+        <PaymentSummary w={withdrawal} />
+        <TxHashInput value={txHash} onChange={setTxHash} />
+        <button
+          onClick={handleSubmit}
+          disabled={!txHash.trim() || submitting}
+          className="w-full py-3 bg-emerald-500 text-white font-bold text-sm rounded-xl
+            hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed
+            flex items-center justify-center gap-2 transition-colors"
+        >
+          <PiPaperPlaneTilt />
+          {submitting ? "Submitting..." : "Mark as Paid"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function WithdrawalCard({
-  w,
-  onReject,
-  onComplete,
+  w, onReject, onComplete,
 }: {
   w: AdminWithdrawal;
   onReject: (id: string) => void;
-  onComplete: (id: string) => void;
+  onComplete: (w: AdminWithdrawal) => void;
 }) {
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
@@ -41,7 +111,7 @@ function WithdrawalCard({
           <PiXCircle /> Reject
         </button>
         <button
-          onClick={() => onComplete(w.id)}
+          onClick={() => onComplete(w)}
           className="flex-1 py-2 bg-emerald-500 text-white font-bold text-sm rounded-xl hover:bg-emerald-600 flex items-center justify-center gap-1 transition-colors"
         >
           <PiCheckCircle /> Paid
@@ -54,6 +124,7 @@ function WithdrawalCard({
 export function WithdrawalsTab({ user }: { user: NonNullable<ReturnType<typeof useUser>["user"]> }) {
   const [withdrawals, setWithdrawals] = useState<AdminWithdrawal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeW, setActiveW] = useState<AdminWithdrawal | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,10 +137,14 @@ export function WithdrawalsTab({ user }: { user: NonNullable<ReturnType<typeof u
     return () => { cancelled = true; };
   }, [user]);
 
-  const handleComplete = async (id: string) => {
-    if (!confirm("Are you sure you have paid this user on the blockchain?")) return;
-    const res = await apiFetch(`/admin/withdrawals/${id}/complete`, "POST");
-    if (res.ok) setWithdrawals((p) => p.filter((w) => w.id !== id));
+  const handleComplete = async (id: string, txHash: string) => {
+    const res = await apiFetch(`/admin/withdrawals/${id}/complete`, "POST", { tx_hash: txHash });
+    if (res.ok) {
+      setWithdrawals((p) => p.filter((w) => w.id !== id));
+      setActiveW(null);
+    } else {
+      alert("Failed to mark as paid. Please try again.");
+    }
   };
 
   const handleReject = async (id: string) => {
@@ -82,10 +157,19 @@ export function WithdrawalsTab({ user }: { user: NonNullable<ReturnType<typeof u
   if (withdrawals.length === 0) return <div className="text-center text-slate-400 py-12">No pending withdrawals.</div>;
 
   return (
-    <div className="space-y-4">
-      {withdrawals.map((w) => (
-        <WithdrawalCard key={w.id} w={w} onReject={handleReject} onComplete={handleComplete} />
-      ))}
-    </div>
+    <>
+      <div className="space-y-4">
+        {withdrawals.map((w) => (
+          <WithdrawalCard key={w.id} w={w} onReject={handleReject} onComplete={setActiveW} />
+        ))}
+      </div>
+      {activeW && (
+        <TxHashModal
+          withdrawal={activeW}
+          onSubmit={handleComplete}
+          onClose={() => setActiveW(null)}
+        />
+      )}
+    </>
   );
 }
