@@ -52,6 +52,7 @@ export default function QuestsScreen() {
       {proof.step && (
         <ProofModal
           taskType={proof.step.task_type}
+          customPlaceholder={proof.step.proof_placeholder}
           onSubmit={proof.submit}
           onClose={() => proof.setStep(null)}
         />

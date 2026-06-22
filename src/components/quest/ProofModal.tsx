@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 
 interface ProofModalProps {
   taskType: string;
+  customPlaceholder?: string;
   onSubmit: (proof: string) => void;
   onClose: () => void;
 }
@@ -14,13 +15,13 @@ const PLACEHOLDERS: Record<string, string> = {
 };
 
 export default function ProofModal({
-  taskType, onSubmit, onClose,
+  taskType, customPlaceholder, onSubmit, onClose,
 }: ProofModalProps) {
   const [value, setValue] = useState("");
   const backdropRef = useRef<HTMLDivElement>(null);
 
   const placeholder =
-    PLACEHOLDERS[taskType] ?? "Enter your username";
+    customPlaceholder || PLACEHOLDERS[taskType] || "Enter your username";
 
   function handleBackdropClick(e: React.MouseEvent) {
     if (e.target === backdropRef.current) onClose();
@@ -43,7 +44,7 @@ export default function ProofModal({
           Submit Proof
         </h3>
         <p className="text-xs text-slate-500 mb-4">
-          Enter your username so we can verify your task.
+          {customPlaceholder ? "Please provide the requested proof below." : "Enter your username so we can verify your task."}
         </p>
         <input
           type="text"

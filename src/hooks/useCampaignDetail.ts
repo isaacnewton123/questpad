@@ -9,6 +9,8 @@ interface Step {
   task_type: string;
   target_url: string;
   sort_order: number;
+  verification_type?: string;
+  proof_placeholder?: string;
 }
 
 interface Campaign {

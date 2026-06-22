@@ -19,7 +19,6 @@ export default function CampaignInteractions({
     const res = await state.handleVerify(stepId);
     if (res && !res.ok) {
       if (res.fallback) {
-        alert(res.error || "Falling back to manual proof");
         const step = state.steps.find((s: Step) => s.id === stepId);
         if (step) setProofStep(step);
       } else {

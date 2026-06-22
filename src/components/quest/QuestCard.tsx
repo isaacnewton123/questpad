@@ -11,6 +11,7 @@ interface QuestCardProps {
   rewardValue: number;
   status?: string;
   loading?: boolean;
+  verificationType?: string;
   onVerify: () => void;
   onStart: () => void;
 }
@@ -28,7 +29,7 @@ const PASSIVE_TYPES = new Set([
 
 export default function QuestCard({
   title, description, taskType, targetUrl, rewardType,
-  rewardValue, status, loading: isLoading, onVerify, onStart,
+  rewardValue, status, loading: isLoading, verificationType, onVerify, onStart,
 }: QuestCardProps) {
   const Icon = TASK_ICONS[taskType] ?? PiGlobe;
   const [opened, setOpened] = useState(false);
@@ -61,6 +62,7 @@ export default function QuestCard({
           status={status}
           loading={isLoading}
           opened={opened}
+          verificationType={verificationType}
           onActionClick={handleActionClick}
           onVerify={onVerify}
           onStart={onStart}
@@ -71,12 +73,12 @@ export default function QuestCard({
 }
 
 function QuestActionButton({
-  taskType, status, loading, opened, onActionClick, onVerify, onStart,
+  taskType, status, loading, opened, verificationType, onActionClick, onVerify, onStart,
 }: {
-  taskType: string; status?: string; loading?: boolean; opened: boolean;
+  taskType: string; status?: string; loading?: boolean; opened: boolean; verificationType?: string;
   onActionClick: () => void; onVerify: () => void; onStart: () => void;
 }) {
-  const isPassive = PASSIVE_TYPES.has(taskType);
+  const isPassive = PASSIVE_TYPES.has(taskType) || verificationType === "manual";
   if (status === "completed") {
     return <span className="text-xs font-bold text-emerald-500 flex items-center gap-1"><PiCheck /> Done</span>;
   }

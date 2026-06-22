@@ -41,6 +41,7 @@ export default function OfficialSection({
             rewardValue={step.reward_value || campaign.reward_value}
             status={completions[step.id]?.status}
             loading={loading === step.id}
+            verificationType={step.verification_type}
             onVerify={() => onVerify(step.id)}
             onStart={() => onStart(step.id)}
           />

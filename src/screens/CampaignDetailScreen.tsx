@@ -27,6 +27,7 @@ export default function CampaignDetailScreen() {
       {proofStep && (
         <ProofModal
           taskType={proofStep.task_type}
+          customPlaceholder={proofStep.proof_placeholder}
           onSubmit={async (p) => { await state.submitProof(proofStep.id, p); setProofStep(null); }}
           onClose={() => setProofStep(null)}
         />

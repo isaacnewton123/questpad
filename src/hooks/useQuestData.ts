@@ -20,6 +20,8 @@ interface OfficialStep {
   sort_order: number;
   reward_type: string;
   reward_value: number;
+  verification_type?: string;
+  proof_placeholder?: string;
 }
 
 interface OfficialCampaign {
