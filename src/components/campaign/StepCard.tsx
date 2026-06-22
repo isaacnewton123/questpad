@@ -9,6 +9,7 @@ interface StepCardProps {
     description: string;
     task_type: string;
     target_url: string;
+    verification_type?: string;
   };
   status?: string;
   onVerify: (stepId: string) => void;
@@ -32,10 +33,12 @@ export default function StepCard({
   index, step, status, onVerify, onStart,
 }: StepCardProps) {
   const Icon = ICONS[step.task_type] ?? PiGlobe;
-  const isPassive = PASSIVE_TYPES.has(step.task_type);
+  const isPassive = PASSIVE_TYPES.has(step.task_type) || step.verification_type === "manual";
   const isInstant = INSTANT_TYPES.has(step.task_type);
   const [cooldown, setCooldown] = useState(0);
-  const [opened, setOpened] = useState(false);
+
+  const isValidUrl = typeof step.target_url === "string" && step.target_url !== "null" && step.target_url.trim() !== "";
+  const [opened, setOpened] = useState(!isValidUrl);
 
   const tickDown = useCallback(() => {
     setCooldown((prev) => Math.max(0, prev - 1));
@@ -48,7 +51,7 @@ export default function StepCard({
   }, [cooldown, tickDown]);
 
   function handleStartClick() {
-    window.open(step.target_url, "_blank");
+    if (isValidUrl) window.open(step.target_url, "_blank");
     setOpened(true);
     if (isInstant) setCooldown(15);
   }
