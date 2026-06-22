@@ -32,10 +32,12 @@ export default function QuestCard({
   rewardValue, status, loading: isLoading, verificationType, onVerify, onStart,
 }: QuestCardProps) {
   const Icon = TASK_ICONS[taskType] ?? PiGlobe;
-  const [opened, setOpened] = useState(false);
+  
+  const isValidUrl = typeof targetUrl === "string" && targetUrl !== "null" && targetUrl.trim() !== "";
+  const [opened, setOpened] = useState(!isValidUrl);
 
   function handleActionClick() {
-    if (targetUrl) window.open(targetUrl, "_blank");
+    if (isValidUrl) window.open(targetUrl, "_blank");
     setOpened(true);
   }
 
