@@ -25,12 +25,14 @@ export function useAds(userId?: number, adType: AdRewardType = "global") {
 
     try {
       // 1. Primary: Adsgram (High eCPM, Paid in TON)
-      // Adsgram doesn't support custom webhook tags.
-      // Used only for 'global' rewards to prevent defaulting to coins.
-      if (window.Adsgram && adType === "global") {
+      if (window.Adsgram) {
         try {
+          // If we are showing a spin ad, we must use a separate block ID 
+          // because Adsgram S2S webhooks don't support custom tracking tags.
+          const blockId = adType === "spin" ? "36021" : "35408";
+          
           const AdController = window.Adsgram.init({
-            blockId: "35408",
+            blockId,
           });
           
           // Adsgram doesn't have a direct way to pass dynamic user IDs.
