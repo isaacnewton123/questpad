@@ -22,7 +22,18 @@ export default function OfficialSection({
     (s) => completions[s.id]?.status !== "completed",
   );
 
-  if (visibleSteps.length === 0) return null;
+  if (visibleSteps.length === 0) {
+    return (
+      <section>
+        <h2 className="section-header flex items-center gap-2">
+          <PiBank className="text-slate-400" /> Official
+        </h2>
+        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-6 text-center mt-3">
+          <p className="text-emerald-600 font-medium">✅ You have completed all official missions!</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section>

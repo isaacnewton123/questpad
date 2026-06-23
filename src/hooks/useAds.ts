@@ -12,13 +12,16 @@ declare global {
 }
 
 export type AdProvider = "adsgram" | "monetag";
+export type AdRewardType = "global" | "spin";
 
-export function useAds(userId?: number) {
+export function useAds(userId?: number, adType: AdRewardType = "global") {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const showRewardedAd = useCallback(async (): Promise<{ success: boolean; provider?: AdProvider }> => {
-    if (isPlaying) return { success: false };
+    if (isPlaying || !userId) return { success: false };
     setIsPlaying(true);
+
+    const formattedUserId = `${userId}_${adType}`;
 
     try {
       // 1. Primary: Adsgram (High eCPM, Paid in TON)
@@ -28,6 +31,8 @@ export function useAds(userId?: number) {
             blockId: "35408",
           });
           
+          // Adsgram doesn't have a direct way to pass dynamic user IDs.
+          // In real implementation, pass it in URL for direct links.
           await AdController.show();
           setIsPlaying(false);
           return { success: true, provider: "adsgram" };
@@ -40,7 +45,7 @@ export function useAds(userId?: number) {
       // 2. Fallback: Monetag (100% Fill Rate)
       if (window.show_11156930) {
         try {
-          await window.show_11156930({ ymid: userId });
+          await window.show_11156930({ ymid: formattedUserId });
           setIsPlaying(false);
           return { success: true, provider: "monetag" };
         } catch (err) {
@@ -57,7 +62,7 @@ export function useAds(userId?: number) {
       setIsPlaying(false);
       return { success: false };
     }
-  }, [isPlaying, userId]);
+  }, [isPlaying, userId, adType]);
 
   return { showRewardedAd, isPlaying };
 }

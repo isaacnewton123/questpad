@@ -66,11 +66,11 @@ src/
 
 | Route | Screen | Description |
 |---|---|---|
-| `/` | SpinScreen | Daily spin wheel with TON/Coin prizes |
-| `/quests` | QuestsScreen | Daily tasks + official quest board |
+| `/` | ArcadeScreen | Game selection menu |
+| `/quests` | QuestsScreen | Official global quest board |
 | `/campaigns` | CampaignsScreen | Partner campaigns (FCFS/Raffle) |
+| `/game/spin` | SpinScreen | Daily spin wheel, local store, and local missions |
 | `/campaigns/:id` | CampaignDetailScreen | Multi-step campaign tasks |
-| `/store` | StoreScreen | Spend coins on power-ups |
 | `/profile` | ProfileScreen | Wallet, balance, withdrawal |
 | `/referrals` | ReferralsScreen | Invite link + leaderboard |
 | `/withdrawals` | WithdrawalHistoryScreen | User payout history |

@@ -3,8 +3,8 @@ import BottomNav from "./components/ui/BottomNav";
 import SpinScreen from "./screens/SpinScreen";
 import QuestsScreen from "./screens/QuestsScreen";
 import CampaignsScreen from "./screens/CampaignsScreen";
+import ArcadeScreen from "./screens/ArcadeScreen";
 import CampaignDetailScreen from "./screens/CampaignDetailScreen";
-import StoreScreen from "./screens/StoreScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import AdminScreen from "./screens/AdminScreen";
 import AdminApproveScreen from "./screens/AdminApproveScreen";
@@ -17,7 +17,11 @@ import { useUser } from "./context/useUser";
 export default function App() {
   const { loading, error } = useUser();
   const location = useLocation();
-  const hideNav = location.pathname.startsWith("/admin") || location.pathname === "/terms" || location.pathname === "/privacy";
+  const hideNav =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/game") ||
+    location.pathname === "/terms" ||
+    location.pathname === "/privacy";
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;
@@ -25,11 +29,11 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<SpinScreen />} />
+        <Route path="/" element={<ArcadeScreen />} />
         <Route path="/quests" element={<QuestsScreen />} />
         <Route path="/campaigns" element={<CampaignsScreen />} />
+        <Route path="/game/spin" element={<SpinScreen />} />
         <Route path="/campaigns/:id" element={<CampaignDetailScreen />} />
-        <Route path="/store" element={<StoreScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/referrals" element={<ReferralsScreen />} />
         <Route path="/withdrawals" element={<WithdrawalHistoryScreen />} />

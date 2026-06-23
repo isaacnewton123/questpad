@@ -34,24 +34,29 @@ interface OfficialCampaign {
 
 interface DailyStatus {
   checkedIn: boolean;
+  spinCheckedIn: boolean;
   adWatches: number;
+  spinAdWatches: number;
   maxAdWatches: number;
 }
 
 type CompletionMap = Record<string, { status: string }>;
 
 interface QuestState {
-  daily: DailyQuest[];
+  daily: {
+    global: DailyQuest[];
+    spin: DailyQuest[];
+  };
   official: OfficialCampaign | null;
   completions: CompletionMap;
   dailyStatus: DailyStatus;
 }
 
 const INITIAL: QuestState = {
-  daily: [],
+  daily: { global: [], spin: [] },
   official: null,
   completions: {},
-  dailyStatus: { checkedIn: false, adWatches: 0, maxAdWatches: 3 },
+  dailyStatus: { checkedIn: false, spinCheckedIn: false, adWatches: 0, spinAdWatches: 0, maxAdWatches: 3 },
 };
 
 export function useQuestData() {
@@ -80,16 +85,22 @@ function useDailyHandlers(
   setLoading: React.Dispatch<React.SetStateAction<string | null>>,
   refetchUser: () => void
 ) {
-  const handleCheckin = useCallback(async () => {
+  const handleCheckin = useCallback(async (type: "global" | "spin" = "global") => {
     setLoading("checkin");
-    const res = await apiFetch("/daily/checkin", "POST");
+    const res = await apiFetch<{ error?: string }>("/daily/checkin", "POST", { type });
     let success = false;
     if (res.ok) {
       setData((s) => ({
-        ...s, dailyStatus: { ...s.dailyStatus, checkedIn: true },
+        ...s,
+        dailyStatus: {
+          ...s.dailyStatus,
+          ...(type === "spin" ? { spinCheckedIn: true } : { checkedIn: true }),
+        },
       }));
       refetchUser();
       success = true;
+    } else {
+      alert(res.data?.error || "Check-in failed. Please try again.");
     }
     setLoading(null);
     return success;

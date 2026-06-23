@@ -1,17 +1,15 @@
 import { NavLink } from "react-router-dom";
 import {
-  PiSpinnerBallFill,
+  PiGameController,
   PiListChecks,
   PiRocketLaunch,
-  PiStorefront,
   PiUserCircle,
 } from "react-icons/pi";
 
 const TABS = [
-  { to: "/", icon: PiSpinnerBallFill, label: "Spin" },
+  { to: "/", icon: PiGameController, label: "Arcade" },
   { to: "/quests", icon: PiListChecks, label: "Quests" },
   { to: "/campaigns", icon: PiRocketLaunch, label: "Campaigns" },
-  { to: "/store", icon: PiStorefront, label: "Store" },
   { to: "/profile", icon: PiUserCircle, label: "Profile" },
 ] as const;
 
