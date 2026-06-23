@@ -25,7 +25,9 @@ export function useAds(userId?: number, adType: AdRewardType = "global") {
 
     try {
       // 1. Primary: Adsgram (High eCPM, Paid in TON)
-      if (window.Adsgram) {
+      // Adsgram doesn't support custom webhook tags.
+      // Used only for 'global' rewards to prevent defaulting to coins.
+      if (window.Adsgram && adType === "global") {
         try {
           const AdController = window.Adsgram.init({
             blockId: "35408",
