@@ -1,4 +1,4 @@
-import { PiBank } from "react-icons/pi";
+import { PiBank, PiCheckCircle } from "react-icons/pi";
 import QuestCard from "./QuestCard";
 import type { OfficialCampaign, CompletionMap } from "../../hooks/useQuestData";
 
@@ -28,8 +28,9 @@ export default function OfficialSection({
         <h2 className="section-header flex items-center gap-2">
           <PiBank className="text-slate-400" /> Official
         </h2>
-        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-6 text-center mt-3">
-          <p className="text-emerald-600 font-medium">✅ You have completed all official missions!</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 text-center mt-3">
+          <PiCheckCircle className="text-slate-400" size={24} />
+          <p className="text-slate-500 text-sm font-medium">You have completed all official missions.</p>
         </div>
       </section>
     );
