@@ -57,7 +57,7 @@ export default function TreeGameScreen() {
         />
       )}
       
-      <TreeNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      {!isScouting && <TreeNav activeTab={activeTab} setActiveTab={setActiveTab} />}
     </div>
   );
 }
