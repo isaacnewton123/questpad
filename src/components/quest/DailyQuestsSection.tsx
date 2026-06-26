@@ -52,6 +52,9 @@ export default function DailyQuestsSection() {
       {checkin.showModal && (
         <CheckInSuccessModal onClose={() => checkin.setShowModal(false)} />
       )}
+      {adCheck.showModal && (
+        <CheckInSuccessModal onClose={() => adCheck.setShowModal(false)} />
+      )}
     </section>
   );
 }

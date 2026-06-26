@@ -29,7 +29,7 @@ export default function ArcadeScreen() {
           image="/arcade/forest.webp"
           path="/game/trees"
           isNew={true}
-          disabled={true}
+          disabled={false}
         />
       </div>
     </div>
@@ -66,7 +66,7 @@ function GameCard({
           <h3 className="font-bold text-slate-800 text-[13px] truncate">{title}</h3>
           {isNew && (
             <span className="px-1.5 py-0.5 bg-linear-to-r from-emerald-400 to-emerald-500 text-white text-[8px] font-bold rounded-sm uppercase tracking-wider">
-              SOON
+              NEW
             </span>
           )}
         </div>

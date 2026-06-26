@@ -16,6 +16,15 @@ export interface UserProfile {
   last_spin_at: string | null;
   spin_streak: number;
   created_at: string;
+  tree_level?: number;
+  tree_water?: number;
+  water_balance?: number;
+  last_tree_claim_at?: string;
+  pvp_steals_today?: number;
+  pvp_steals_reset_at?: string;
+  shop_water_bought_today?: number;
+  tree_ad_watches_today?: number;
+  tree_ad_watches_reset_at?: string;
 }
 
 interface AuthResponse {

@@ -29,15 +29,17 @@ export function useAdVerification(
   refetchUser: () => void
 ) {
   const [verifyingAd, setVerifyingAd] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const handleAdClick = useAdClickHandler(showRewardedAd, refetchUser, setVerifyingAd);
 
   const prevAdWatches = useRef(adWatches);
   useEffect(() => {
     if (adWatches > prevAdWatches.current) {
       setVerifyingAd(false);
+      setShowModal(true);
     }
     prevAdWatches.current = adWatches;
   }, [adWatches]);
 
-  return { verifyingAd, handleAdClick, adRemaining: maxAdWatches - adWatches };
+  return { verifyingAd, handleAdClick, adRemaining: maxAdWatches - adWatches, showModal, setShowModal };
 }

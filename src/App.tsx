@@ -12,6 +12,7 @@ import ReferralsScreen from "./screens/ReferralsScreen";
 import WithdrawalHistoryScreen from "./screens/WithdrawalHistoryScreen";
 import TermsScreen from "./screens/TermsScreen";
 import PrivacyScreen from "./screens/PrivacyScreen";
+import TreeGameScreen from "./screens/TreeGameScreen";
 import { useUser } from "./context/useUser";
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/quests" element={<QuestsScreen />} />
         <Route path="/campaigns" element={<CampaignsScreen />} />
         <Route path="/game/spin" element={<SpinScreen />} />
+        <Route path="/game/trees" element={<TreeGameScreen />} />
         <Route path="/campaigns/:id" element={<CampaignDetailScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/referrals" element={<ReferralsScreen />} />

@@ -19,7 +19,7 @@ interface ApiResult<T = unknown> {
 
 export async function apiFetch<T = unknown>(
   path: string,
-  method: "GET" | "POST" = "GET",
+  method: "GET" | "POST" | "DELETE" = "GET",
   body?: Record<string, unknown>
 ): Promise<ApiResult<T>> {
   const res = await fetch(`${BASE_URL}${path}`, {

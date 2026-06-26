@@ -12,7 +12,7 @@ declare global {
 }
 
 export type AdProvider = "adsgram" | "monetag";
-export type AdRewardType = "global" | "spin";
+export type AdRewardType = "global" | "spin" | "tree";
 
 export function useAds(userId?: number, adType: AdRewardType = "global") {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -29,7 +29,7 @@ export function useAds(userId?: number, adType: AdRewardType = "global") {
         try {
           // If we are showing a spin ad, we must use a separate block ID 
           // because Adsgram S2S webhooks don't support custom tracking tags.
-          const blockId = adType === "spin" ? "36021" : "35408";
+          const blockId = adType === "spin" ? "36021" : adType === "tree" ? "36034" : "35408";
           
           const AdController = window.Adsgram.init({
             blockId,

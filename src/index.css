@@ -100,6 +100,34 @@ html, body {
   z-index: 9999;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.2);
+  }
+}
+.animate-float {
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.9));
+  }
+}
+.tree-level-6 {
+  animation: pulse-glow 2s infinite;
+}
+
 @keyframes cffall {
   0% {
     opacity: 1;
@@ -130,6 +158,7 @@ html, body {
 .text-gradient {
   background: linear-gradient(135deg, #0f172a, #334155);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -352,4 +381,37 @@ html, body {
 .daily-card-done {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* Forest Minigame Redesign */
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-radar-sweep {
+  animation: radar-sweep 4s linear infinite;
+}
+
+@keyframes soft-breathe {
+  0%, 100% { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)); transform: scale(1.02); }
+}
+.animate-soft-breathe {
+  animation: soft-breathe 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 2.5s infinite;
 }

@@ -11,12 +11,7 @@ export default function SpinMissions() {
   const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   const { showRewardedAd, isPlaying } = useAds(userId, "spin");
 
-  const adCheck = useAdVerification(
-    data.dailyStatus.spinAdWatches,
-    data.dailyStatus.maxAdWatches,
-    showRewardedAd,
-    refetchUser
-  );
+  const adCheck = useAdVerification(data.dailyStatus.spinAdWatches, data.dailyStatus.maxAdWatches, showRewardedAd, refetchUser);
 
   const checkin = useCheckinModal(() => handleCheckin("spin"));
   const spinCheckedIn = data.dailyStatus.spinCheckedIn;
@@ -30,33 +25,12 @@ export default function SpinMissions() {
         <PiSun className="text-amber-500" /> Spin Hub Missions
       </h2>
       <div className="grid grid-cols-2 gap-3 mt-3">
-        <DailyCard
-          icon={<PiPlayCircle />}
-          title="Watch Ad"
-          subtitle={adRemaining > 0 ? `${adRemaining}/3 left` : "Limit reached"}
-          reward={<RewardBadge type="spin" value={1} />}
-          done={adRemaining <= 0}
-          loading={isLoading === "ad"}
-          onClick={adCheck.handleAdClick}
-        />
-        <DailyCard
-          icon={<PiCalendarCheckFill className="text-emerald-500" />}
-          title="Daily Check-in"
-          subtitle={spinCheckedIn ? "Done for today" : "Check in for +1 Spin"}
-          reward={<RewardBadge type="spin" value={1} />}
-          done={spinCheckedIn}
-          loading={loading === "checkin"}
-          onClick={checkin.onClick}
-        />
+        <DailyCard icon={<PiPlayCircle />} title="Watch Ad" subtitle={adRemaining > 0 ? `${adRemaining}/3 left` : "Limit reached"} reward={<RewardBadge type="spin" value={1} />} done={adRemaining <= 0} loading={isLoading === "ad"} onClick={adCheck.handleAdClick} />
+        <DailyCard icon={<PiCalendarCheckFill className="text-emerald-500" />} title="Daily Check-in" subtitle={spinCheckedIn ? "Done for today" : "Check in for +1 Spin"} reward={<RewardBadge type="spin" value={1} />} done={spinCheckedIn} loading={loading === "checkin"} onClick={checkin.onClick} />
       </div>
 
-      {checkin.showModal && (
-        <CheckInSuccessModal 
-          onClose={() => checkin.setShowModal(false)}
-          rewardType="spin"
-          rewardValue={1}
-        />
-      )}
+      {checkin.showModal && <CheckInSuccessModal onClose={() => checkin.setShowModal(false)} rewardType="spin" rewardValue={1} />}
+      {adCheck.showModal && <CheckInSuccessModal onClose={() => adCheck.setShowModal(false)} rewardType="spin" rewardValue={1} />}
     </section>
   );
 }
