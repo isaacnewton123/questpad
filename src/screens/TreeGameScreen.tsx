@@ -43,7 +43,7 @@ export default function TreeGameScreen() {
       )}
 
       <div className="flex-1 relative z-10 overflow-hidden mt-4 flex flex-col">
-        {activeTab === 'tree' && <TreeTab gameState={gameState} uncollectedCoins={uncollectedCoins} loading={ctl.loading} handleClaim={ctl.handleClaim} handleWater={ctl.handleWater} handleQuest={() => ctl.handleQuest(gameState)} isAdPlaying={ctl.isAdPlaying} />}
+        {activeTab === 'tree' && <TreeTab gameState={gameState} uncollectedCoins={uncollectedCoins} loading={ctl.loading} handleClaim={ctl.handleClaim} handleWater={ctl.handleWater} handleQuest={ctl.handleQuest} isAdPlaying={ctl.isAdPlaying} />}
         {activeTab === 'pvp' && <PvpTab gameState={gameState} loading={ctl.loading} handleSearchPvp={ctl.searchPvp} handleSteal={ctl.handleSteal} onScoutChange={setIsScouting} />}
         {activeTab === 'shop' && <ShopTab gameState={gameState} loading={ctl.loading} handleBuyWater={ctl.handleBuyWater} />}
         {activeTab === 'leaderboard' && <LeaderboardTab leaderboard={leaderboard} profileId={profile.telegram_id} seasonEnd={seasonEnd} />}

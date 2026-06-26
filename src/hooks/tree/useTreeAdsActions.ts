@@ -1,34 +1,32 @@
-import { useState, useCallback } from 'react';
 import { useAds } from '../../hooks/useAds';
 import { useUser } from '../../context/useUser';
-import type { GameState } from '../../types/tree';
+import { useAdVerification } from '../useAdVerification';
 
 export function useTreeAdsActions() {
-  const { user } = useUser();
-  const [isAdPlaying, setIsAdPlaying] = useState(false);
-  const [showAdSuccessModal, setShowAdSuccessModal] = useState(false);
-  const { showRewardedAd } = useAds(user?.telegram_id, "tree");
+  const { user, refetchUser } = useUser();
+  const { showRewardedAd, isPlaying } = useAds(user?.telegram_id, "tree");
 
-  const handleQuest = useCallback(async (gameState: GameState) => {
-    if (!user) return;
-    if (gameState.tree_ad_watches_today >= 5) {
+  const adWatches = user?.tree_ad_watches_today || 0;
+
+  const adCheck = useAdVerification(
+    adWatches,
+    5, // max tree ads
+    showRewardedAd,
+    refetchUser
+  );
+
+  const handleQuest = () => {
+    if (adWatches >= 5) {
       alert("You have reached your daily limit of 5 ads for the tree.");
       return;
     }
-    setIsAdPlaying(true);
-    const result = await showRewardedAd();
-    if (result.success) {
-      setShowAdSuccessModal(true);
-    } else {
-      alert("No ads available right now. Please try again later.");
-    }
-    setIsAdPlaying(false);
-  }, [user, showRewardedAd]);
+    adCheck.handleAdClick();
+  };
 
   return {
-    isAdPlaying,
-    showAdSuccessModal,
-    setShowAdSuccessModal,
+    isAdPlaying: isPlaying || adCheck.verifyingAd,
+    showAdSuccessModal: adCheck.showModal,
+    setShowAdSuccessModal: adCheck.setShowModal,
     handleQuest
   };
 }
