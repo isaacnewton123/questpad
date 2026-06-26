@@ -35,11 +35,15 @@ export function useAdVerification(
   const prevAdWatches = useRef(adWatches);
   useEffect(() => {
     if (adWatches > prevAdWatches.current) {
-      setVerifyingAd(false);
-      setShowModal(true);
+      if (verifyingAd) {
+        setTimeout(() => {
+          setVerifyingAd(false);
+          setShowModal(true);
+        }, 0);
+      }
     }
     prevAdWatches.current = adWatches;
-  }, [adWatches]);
+  }, [adWatches, verifyingAd]);
 
   return { verifyingAd, handleAdClick, adRemaining: maxAdWatches - adWatches, showModal, setShowModal };
 }
