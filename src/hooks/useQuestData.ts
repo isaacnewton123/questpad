@@ -64,6 +64,11 @@ export function useQuestData() {
   const [data, setData] = useState<QuestState>(INITIAL);
   const [loading, setLoading] = useState<string | null>(null);
 
+  const refetchQuests = useCallback(async () => {
+    const res = await apiFetch<QuestState>("/quests/available");
+    if (res.ok) setData(res.data);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -77,7 +82,7 @@ export function useQuestData() {
   const handlers = useDailyHandlers(setData, setLoading, refetchUser);
   const stepHandlers = useStepHandlers(setData, setLoading, refetchUser);
 
-  return { data, loading, refetchUser, ...handlers, ...stepHandlers };
+  return { data, loading, refetchUser, refetchQuests, ...handlers, ...stepHandlers };
 }
 
 function useDailyHandlers(

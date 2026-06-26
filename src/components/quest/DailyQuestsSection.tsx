@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { PiCalendarCheckFill, PiPlayCircleFill } from "react-icons/pi";
 import { useQuestData } from "../../hooks/useQuestData";
 import { useAds } from "../../hooks/useAds";
@@ -7,16 +8,21 @@ import CheckInSuccessModal from "./CheckInSuccessModal";
 import RewardBadge from "../ui/RewardBadge";
 
 export default function DailyQuestsSection() {
-  const { data, loading, handleCheckin, refetchUser } = useQuestData();
+  const { data, loading, handleCheckin, refetchUser, refetchQuests } = useQuestData();
   const checkin = useCheckinModal(handleCheckin);
   const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   const { showRewardedAd, isPlaying } = useAds(userId, "global");
+
+  const handleRefetch = useCallback(() => {
+    refetchUser();
+    refetchQuests();
+  }, [refetchUser, refetchQuests]);
 
   const adCheck = useAdVerification(
     data.dailyStatus.adWatches,
     data.dailyStatus.maxAdWatches,
     showRewardedAd,
-    refetchUser
+    handleRefetch
   );
 
   const checkedIn = data.dailyStatus.checkedIn;
@@ -49,12 +55,8 @@ export default function DailyQuestsSection() {
         />
       </div>
 
-      {checkin.showModal && (
-        <CheckInSuccessModal onClose={() => checkin.setShowModal(false)} />
-      )}
-      {adCheck.showModal && (
-        <CheckInSuccessModal onClose={() => adCheck.setShowModal(false)} />
-      )}
+      {checkin.showModal && <CheckInSuccessModal onClose={() => checkin.setShowModal(false)} />}
+      {adCheck.showModal && <CheckInSuccessModal onClose={() => adCheck.setShowModal(false)} />}
     </section>
   );
 }

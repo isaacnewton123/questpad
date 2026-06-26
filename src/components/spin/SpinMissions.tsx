@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { PiSun, PiPlayCircle, PiCalendarCheckFill } from "react-icons/pi";
 import RewardBadge from "../ui/RewardBadge";
 import { useQuestData } from "../../hooks/useQuestData";
@@ -7,11 +8,16 @@ import { useCheckinModal } from "../../hooks/useCheckinModal";
 import CheckInSuccessModal from "../quest/CheckInSuccessModal";
 
 export default function SpinMissions() {
-  const { data, loading, refetchUser, handleCheckin } = useQuestData();
+  const { data, loading, refetchUser, refetchQuests, handleCheckin } = useQuestData();
   const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   const { showRewardedAd, isPlaying } = useAds(userId, "spin");
 
-  const adCheck = useAdVerification(data.dailyStatus.spinAdWatches, data.dailyStatus.maxAdWatches, showRewardedAd, refetchUser);
+  const handleRefetch = useCallback(() => {
+    refetchUser();
+    refetchQuests();
+  }, [refetchUser, refetchQuests]);
+
+  const adCheck = useAdVerification(data.dailyStatus.spinAdWatches, data.dailyStatus.maxAdWatches, showRewardedAd, handleRefetch);
 
   const checkin = useCheckinModal(() => handleCheckin("spin"));
   const spinCheckedIn = data.dailyStatus.spinCheckedIn;
