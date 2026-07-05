@@ -24,7 +24,7 @@ export default function ClaimSection({
           Raffle has concluded! 🎉
         </p>
         <p className="text-xs text-slate-500">
-          Check your TON balance in your profile to see if you won!
+          Check your balance in your profile to see if you won!
         </p>
       </section>
     );

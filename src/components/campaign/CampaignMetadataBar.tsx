@@ -27,8 +27,8 @@ export default function CampaignMetadataBar({
         <CountdownBadge expiresAt={campaign.expires_at} />
       )}
       {campaign.reward_pool > 0 && (
-        <span className="text-[11px] font-semibold text-blue-500">
-          Pool: {Number(campaign.reward_pool)} TON
+        <span className="text-[11px] font-semibold text-blue-500 capitalize">
+          Pool: {Number(campaign.reward_pool)} {campaign.reward_type === 'ton' ? 'TON' : campaign.reward_type + 's'}
         </span>
       )}
     </div>
