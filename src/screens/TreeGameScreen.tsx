@@ -19,7 +19,7 @@ export default function TreeGameScreen() {
   const navigate = useNavigate();
   const { user: profile } = useUser();
   const { gameState, uncollectedCoins } = useTreeState();
-  const { leaderboard, seasonEnd, fetchLeaderboard } = useLeaderboard();
+  const { leaderboard, seasonEnd, isPaused, fetchLeaderboard } = useLeaderboard();
   const ctl = useTreeGameController();
   const [activeTab, setActiveTab] = useState<Tab>('tree');
   const [isScouting, setIsScouting] = useState(false);
@@ -29,6 +29,27 @@ export default function TreeGameScreen() {
   }, [fetchLeaderboard]);
 
   if (!gameState || !profile) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading...</div>;
+
+  if (isPaused) {
+    return (
+      <div className="max-w-md mx-auto min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-slate-50 relative overflow-hidden">
+        <button onClick={() => navigate('/')} className="absolute top-6 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-slate-700 z-50">
+          <PiArrowLeftBold />
+        </button>
+        <div className="bg-animated opacity-50" />
+        <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-slate-200 z-10">
+          <PiTreeFill className="text-slate-400 text-5xl opacity-50 grayscale" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2 z-10">Season Paused</h2>
+        <p className="text-slate-500 text-sm mb-8 max-w-[280px] leading-relaxed z-10">
+          The Tree Game season has concluded! We are currently calculating rewards and preparing for the next season. Please check back later.
+        </p>
+        <button onClick={() => navigate('/')} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10">
+          Return Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto min-h-dvh pb-nav pt-4 px-4 relative flex flex-col overflow-hidden text-slate-800">

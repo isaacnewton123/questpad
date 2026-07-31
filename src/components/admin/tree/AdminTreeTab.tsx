@@ -1,9 +1,20 @@
-import { useState } from "react";
-import { PiTree, PiWarningCircle } from "react-icons/pi";
+import { useState, useEffect } from "react";
+import { PiTree, PiWarningCircle, PiPauseFill, PiPlayFill } from "react-icons/pi";
 import { apiFetch } from "../../../lib/api";
 
 export default function AdminTreeTab() {
   const [loading, setLoading] = useState(false);
+  const [isPaused, setIsPaused] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const fetchState = async () => {
+      const res = await apiFetch<{ is_paused: boolean }>("/admin/tree/state", "GET");
+      if (active && res.ok) setIsPaused(res.data?.is_paused ?? false);
+    };
+    fetchState();
+    return () => { active = false; };
+  }, []);
 
   const handleSettleSeason = async () => {
     if (!confirm("Are you SURE you want to manually settle the Tree Season? This will reset all user water progress to 0, distribute TON to the top 3, and add 30 days to the season clock!")) {
@@ -17,6 +28,21 @@ export default function AdminTreeTab() {
       alert("Successfully settled the tree season!");
     } else {
       alert("Failed to settle season.");
+    }
+  };
+
+  const handleTogglePause = async () => {
+    const action = isPaused ? "RESUME" : "PAUSE";
+    if (!confirm(`Are you sure you want to ${action} the Tree Season?`)) return;
+
+    setLoading(true);
+    const res = await apiFetch<{ is_paused: boolean }>("/admin/tree/toggle-pause", "POST");
+    setLoading(false);
+
+    if (res.ok) {
+      setIsPaused(res.data?.is_paused ?? false);
+    } else {
+      alert(`Failed to ${action.toLowerCase()} season.`);
     }
   };
 
@@ -42,11 +68,33 @@ export default function AdminTreeTab() {
 
         <button
           onClick={handleSettleSeason}
-          disabled={loading}
-          className="w-full bg-emerald-500 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-2 hover:bg-emerald-600 transition-colors disabled:bg-slate-300 disabled:text-slate-500"
+          disabled={loading || isPaused === null}
+          className="w-full bg-emerald-500 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-2 hover:bg-emerald-600 transition-colors disabled:bg-slate-300 disabled:text-slate-500 mb-4"
         >
           <PiTree size={18} />
           {loading ? "Processing..." : "Settle Season & Start Next"}
+        </button>
+        
+        <hr className="border-slate-100 my-4" />
+
+        <div className="mb-4">
+          <h3 className="text-sm font-bold text-slate-800">Season State: {isPaused ? <span className="text-amber-500">PAUSED</span> : <span className="text-emerald-500">ACTIVE</span>}</h3>
+          <p className="text-xs text-slate-500 mt-1">
+            Pausing the season will lock all users out of the Tree Game with a "Season Paused" screen.
+          </p>
+        </div>
+
+        <button
+          onClick={handleTogglePause}
+          disabled={loading || isPaused === null}
+          className={`w-full font-bold py-3 rounded-xl flex justify-center items-center gap-2 transition-colors disabled:bg-slate-300 disabled:text-slate-500 ${
+            isPaused 
+              ? "bg-slate-800 text-white hover:bg-slate-900" 
+              : "bg-amber-100 text-amber-600 hover:bg-amber-200"
+          }`}
+        >
+          {isPaused ? <PiPlayFill size={18} /> : <PiPauseFill size={18} />}
+          {loading ? "Processing..." : isPaused ? "Resume Season" : "Pause Season"}
         </button>
       </div>
     </div>
