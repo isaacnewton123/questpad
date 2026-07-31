@@ -19,7 +19,7 @@ export default function TreeGameScreen() {
   const navigate = useNavigate();
   const { user: profile } = useUser();
   const { gameState, uncollectedCoins } = useTreeState();
-  const { leaderboard, seasonEnd, isPaused, fetchLeaderboard } = useLeaderboard();
+  const { leaderboard, seasonEnd, isPaused, latestWinners, fetchLeaderboard } = useLeaderboard();
   const ctl = useTreeGameController();
   const [activeTab, setActiveTab] = useState<Tab>('tree');
   const [isScouting, setIsScouting] = useState(false);
@@ -37,14 +37,46 @@ export default function TreeGameScreen() {
           <PiArrowLeftBold />
         </button>
         <div className="bg-animated opacity-50" />
-        <div className="w-24 h-24 bg-slate-100 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-slate-200 z-10">
-          <PiTreeFill className="text-slate-400 text-5xl opacity-50 grayscale" />
+        
+        <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-4 shadow-inner border border-blue-200 z-10">
+          <PiStarFill className="text-blue-500 text-4xl" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mb-2 z-10">Season Paused</h2>
-        <p className="text-slate-500 text-sm mb-8 max-w-[280px] leading-relaxed z-10">
-          The Tree Game season has concluded! We are currently calculating rewards and preparing for the next season. Please check back later.
+        
+        <h2 className="text-3xl font-black text-slate-800 mb-2 z-10">Season Ended</h2>
+        <p className="text-slate-600 text-sm mb-6 max-w-[280px] leading-relaxed z-10 font-medium">
+          Thank you for participating! The tree season has concluded. Here are our top players:
         </p>
-        <button onClick={() => navigate('/')} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10">
+
+        {latestWinners && latestWinners.length > 0 && (
+          <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-200 mb-8 z-10">
+            <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center justify-center gap-2">
+              <PiRankingFill className="text-blue-500" />
+              Season Winners
+            </h3>
+            <div className="space-y-3">
+              {latestWinners.map((winner) => (
+                <div key={winner.users.telegram_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                      winner.rank === 1 ? "bg-amber-100 text-amber-600" :
+                      winner.rank === 2 ? "bg-slate-200 text-slate-600" :
+                      winner.rank === 3 ? "bg-orange-100 text-orange-600" :
+                      "bg-slate-100 text-slate-500"
+                    }`}>
+                      #{winner.rank}
+                    </div>
+                    <div className="font-semibold text-slate-700 text-sm">{winner.users.username}</div>
+                  </div>
+                  <div className="flex items-center gap-1 font-bold text-blue-500 text-sm">
+                    {winner.reward_ton} <SiTon />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <button onClick={() => navigate('/')} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10 w-full max-w-[200px]">
           Return Home
         </button>
       </div>

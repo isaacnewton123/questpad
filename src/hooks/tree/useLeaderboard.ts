@@ -2,10 +2,20 @@ import { useState, useCallback } from 'react';
 import { apiFetch } from '../../lib/api';
 import type { LeaderboardEntry } from '../../types/tree';
 
+export interface LeaderboardWinner {
+  rank: number;
+  reward_ton: number;
+  users: {
+    username: string;
+    telegram_id: number;
+  };
+}
+
 export function useLeaderboard() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [seasonEnd, setSeasonEnd] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [latestWinners, setLatestWinners] = useState<LeaderboardWinner[]>([]);
 
   const fetchLeaderboard = useCallback(async () => {
     try {
@@ -14,6 +24,7 @@ export function useLeaderboard() {
         setLeaderboard((res.data as Record<string, unknown>).leaderboard as LeaderboardEntry[]);
         setSeasonEnd((res.data as Record<string, unknown>).season_end as string | null);
         setIsPaused((res.data as Record<string, unknown>).is_paused as boolean);
+        setLatestWinners((res.data as Record<string, unknown>).latest_winners as LeaderboardWinner[]);
       } else {
         console.error('Failed to fetch leaderboard:', (res.data as Record<string, unknown>).error);
       }
@@ -22,5 +33,5 @@ export function useLeaderboard() {
     }
   }, []);
 
-  return { leaderboard, seasonEnd, isPaused, fetchLeaderboard };
+  return { leaderboard, seasonEnd, isPaused, latestWinners, fetchLeaderboard };
 }
