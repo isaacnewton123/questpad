@@ -19,7 +19,7 @@ export default function TreeGameScreen() {
   const navigate = useNavigate();
   const { user: profile } = useUser();
   const { gameState, uncollectedCoins } = useTreeState();
-  const { leaderboard, seasonEnd, isPaused, latestWinners, fetchLeaderboard } = useLeaderboard();
+  const { leaderboard, seasonEnd, isEnded, latestWinners, fetchLeaderboard } = useLeaderboard();
   const ctl = useTreeGameController();
   const [activeTab, setActiveTab] = useState<Tab>('tree');
   const [isScouting, setIsScouting] = useState(false);
@@ -30,7 +30,7 @@ export default function TreeGameScreen() {
 
   if (!gameState || !profile) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading...</div>;
 
-  if (isPaused) {
+  if (isEnded) {
     return (
       <div className="max-w-md mx-auto min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-slate-50 relative overflow-hidden">
         <button onClick={() => navigate('/')} className="absolute top-6 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-slate-700 z-50">

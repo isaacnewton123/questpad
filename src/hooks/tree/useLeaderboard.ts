@@ -14,7 +14,7 @@ export interface LeaderboardWinner {
 export function useLeaderboard() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [seasonEnd, setSeasonEnd] = useState<string | null>(null);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isEnded, setIsEnded] = useState<boolean>(false);
   const [latestWinners, setLatestWinners] = useState<LeaderboardWinner[]>([]);
 
   const fetchLeaderboard = useCallback(async () => {
@@ -23,7 +23,7 @@ export function useLeaderboard() {
       if (res.ok) {
         setLeaderboard((res.data as Record<string, unknown>).leaderboard as LeaderboardEntry[]);
         setSeasonEnd((res.data as Record<string, unknown>).season_end as string | null);
-        setIsPaused((res.data as Record<string, unknown>).is_paused as boolean);
+        setIsEnded((res.data as Record<string, unknown>).is_ended as boolean);
         setLatestWinners((res.data as Record<string, unknown>).latest_winners as LeaderboardWinner[]);
       } else {
         console.error('Failed to fetch leaderboard:', (res.data as Record<string, unknown>).error);
@@ -33,5 +33,5 @@ export function useLeaderboard() {
     }
   }, []);
 
-  return { leaderboard, seasonEnd, isPaused, latestWinners, fetchLeaderboard };
+  return { leaderboard, seasonEnd, isEnded, latestWinners, fetchLeaderboard };
 }
