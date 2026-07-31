@@ -1,20 +1,22 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { PiTicket, PiListChecks, PiWallet, PiClockCounterClockwise } from "react-icons/pi";
+import { PiTicket, PiListChecks, PiWallet, PiClockCounterClockwise, PiTree } from "react-icons/pi";
 import { useUser } from "../context/useUser";
 import AdminHeader from "../components/admin/AdminHeader";
 import AdminProofsTab from "../components/admin/proof/AdminProofsTab";
 import { WithdrawalsTab } from "../components/admin/withdrawal/AdminWithdrawalsTab";
 import { AdminHistoryTab } from "../components/admin/withdrawal/AdminHistoryTab";
 import AdminCampaignsTab from "../components/admin/campaign/AdminCampaignsTab";
+import AdminTreeTab from "../components/admin/tree/AdminTreeTab";
 
-type AdminTab = "proofs" | "campaigns" | "withdrawals" | "history";
+type AdminTab = "proofs" | "campaigns" | "withdrawals" | "history" | "tree";
 
 const TAB_ITEMS = [
   { id: "proofs", icon: PiListChecks, label: "Proofs" },
   { id: "withdrawals", icon: PiWallet, label: "Payouts" },
   { id: "history", icon: PiClockCounterClockwise, label: "History" },
   { id: "campaigns", icon: PiTicket, label: "Raffles" },
+  { id: "tree", icon: PiTree, label: "Tree" },
 ] as const;
 
 export default function AdminScreen() {
@@ -30,6 +32,7 @@ export default function AdminScreen() {
         {tab === "withdrawals" && <WithdrawalsTab user={user} />}
         {tab === "history" && <AdminHistoryTab />}
         {tab === "campaigns" && <AdminCampaignsTab user={user} />}
+        {tab === "tree" && <AdminTreeTab />}
       </div>
       <AdminNav tab={tab} setTab={setTab} />
     </div>
