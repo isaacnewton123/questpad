@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/useUser';
 import { useTreeState } from '../hooks/tree/useTreeState';
-import { useLeaderboard } from '../hooks/tree/useLeaderboard';
+import { useLeaderboard, type LeaderboardWinner } from '../hooks/tree/useLeaderboard';
 import { useTreeGameController } from '../hooks/tree/useTreeGameController';
 import CheckInSuccessModal from '../components/quest/CheckInSuccessModal';
 import { TreeTab } from '../components/tree/TreeTab';
@@ -31,56 +31,7 @@ export default function TreeGameScreen() {
   if (!gameState || !profile) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading...</div>;
 
   if (isEnded) {
-    return (
-      <div className="max-w-md mx-auto min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-slate-50 relative overflow-hidden">
-        <button onClick={() => navigate('/')} className="absolute top-6 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-slate-700 z-50">
-          <PiArrowLeftBold />
-        </button>
-        <div className="bg-animated opacity-50" />
-        
-        <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-4 shadow-inner border border-blue-200 z-10">
-          <PiStarFill className="text-blue-500 text-4xl" />
-        </div>
-        
-        <h2 className="text-3xl font-black text-slate-800 mb-2 z-10">Season Ended</h2>
-        <p className="text-slate-600 text-sm mb-6 max-w-[280px] leading-relaxed z-10 font-medium">
-          Thank you for participating! The tree season has concluded. Here are our top players:
-        </p>
-
-        {latestWinners && latestWinners.length > 0 && (
-          <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-200 mb-8 z-10">
-            <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center justify-center gap-2">
-              <PiRankingFill className="text-blue-500" />
-              Season Winners
-            </h3>
-            <div className="space-y-3">
-              {latestWinners.map((winner) => (
-                <div key={winner.users.telegram_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                      winner.rank === 1 ? "bg-amber-100 text-amber-600" :
-                      winner.rank === 2 ? "bg-slate-200 text-slate-600" :
-                      winner.rank === 3 ? "bg-orange-100 text-orange-600" :
-                      "bg-slate-100 text-slate-500"
-                    }`}>
-                      #{winner.rank}
-                    </div>
-                    <div className="font-semibold text-slate-700 text-sm">{winner.users.username}</div>
-                  </div>
-                  <div className="flex items-center gap-1 font-bold text-blue-500 text-sm">
-                    {winner.reward_ton} <SiTon />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <button onClick={() => navigate('/')} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10 w-full max-w-[200px]">
-          Return Home
-        </button>
-      </div>
-    );
+    return <SeasonEndedOverlay latestWinners={latestWinners} onReturnHome={() => navigate('/')} />;
   }
 
   return (
@@ -103,11 +54,7 @@ export default function TreeGameScreen() {
       </div>
       
       {ctl.showAdSuccessModal && (
-        <CheckInSuccessModal 
-          onClose={() => ctl.setShowAdSuccessModal(false)} 
-          rewardType="water" 
-          rewardValue={100} 
-        />
+        <CheckInSuccessModal onClose={() => ctl.setShowAdSuccessModal(false)} rewardType="water" rewardValue={100} />
       )}
       
       {!isScouting && <TreeNav activeTab={activeTab} setActiveTab={setActiveTab} />}
@@ -115,8 +62,61 @@ export default function TreeGameScreen() {
   );
 }
 
-import type { UserProfile } from '../context/UserContext';
+function SeasonEndedOverlay({ latestWinners, onReturnHome }: { latestWinners: LeaderboardWinner[], onReturnHome: () => void }) {
+  return (
+    <div className="max-w-md mx-auto min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-slate-50 relative overflow-hidden">
+      <button onClick={onReturnHome} className="absolute top-6 left-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-slate-700 z-50">
+        <PiArrowLeftBold />
+      </button>
+      <div className="bg-animated opacity-50" />
+      <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mb-4 shadow-inner border border-blue-200 z-10">
+        <PiStarFill className="text-blue-500 text-4xl" />
+      </div>
+      <h2 className="text-3xl font-black text-slate-800 mb-2 z-10">Season Ended</h2>
+      <p className="text-slate-600 text-sm mb-6 max-w-[280px] leading-relaxed z-10 font-medium">
+        Thank you for participating! The tree season has concluded. Here are our top players:
+      </p>
+      {latestWinners && latestWinners.length > 0 && <WinnerList latestWinners={latestWinners} />}
+      <button onClick={onReturnHome} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10 w-full max-w-[200px]">
+        Return Home
+      </button>
+    </div>
+  );
+}
 
+function WinnerList({ latestWinners }: { latestWinners: LeaderboardWinner[] }) {
+  return (
+    <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-200 mb-8 z-10">
+      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center justify-center gap-2">
+        <PiRankingFill className="text-blue-500" />
+        Season Winners
+      </h3>
+      <div className="space-y-3">
+        {latestWinners.map((winner) => <WinnerRow key={winner.users.telegram_id} winner={winner} />)}
+      </div>
+    </div>
+  );
+}
+
+function WinnerRow({ winner }: { winner: LeaderboardWinner }) {
+  const colors = ["bg-amber-100 text-amber-600", "bg-slate-200 text-slate-600", "bg-orange-100 text-orange-600"];
+  const badgeColor = colors[winner.rank - 1] || "bg-slate-100 text-slate-500";
+  return (
+    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+      <div className="flex items-center gap-3">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${badgeColor}`}>
+          #{winner.rank}
+        </div>
+        <div className="font-semibold text-slate-700 text-sm">{winner.users.username}</div>
+      </div>
+      <div className="flex items-center gap-1 font-bold text-blue-500 text-sm">
+        {winner.reward_ton} <SiTon />
+      </div>
+    </div>
+  );
+}
+
+import type { UserProfile } from '../context/UserContext';
 import type { LeaderboardEntry } from '../types/tree';
 
 function TreeHeader({ profile, gameState, leaderboard, onExit }: { profile: UserProfile, gameState: GameState, leaderboard: LeaderboardEntry[], onExit: () => void }) {
@@ -131,11 +131,11 @@ function TreeHeader({ profile, gameState, leaderboard, onExit }: { profile: User
         </button>
         <div className="flex flex-col">
           <div className="flex items-center text-amber-500 font-bold text-[13px]">
-          <PiCoinsFill className="mr-1" /><span>{Number(profile.coins || 0).toFixed(2)}</span>
-        </div>
-        <div className="flex items-center text-blue-500 font-bold text-[13px] mt-0.5">
-          <SiTon className="mr-1.5" /><span>{Number(profile.ledger_ton || 0).toFixed(2)}</span>
-        </div>
+            <PiCoinsFill className="mr-1" /><span>{Number(profile.coins || 0).toFixed(2)}</span>
+          </div>
+          <div className="flex items-center text-blue-500 font-bold text-[13px] mt-0.5">
+            <SiTon className="mr-1.5" /><span>{Number(profile.ledger_ton || 0).toFixed(2)}</span>
+          </div>
         </div>
       </div>
       <div className="flex flex-col items-end">
