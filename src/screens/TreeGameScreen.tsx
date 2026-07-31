@@ -73,11 +73,11 @@ function SeasonEndedOverlay({ latestWinners, onReturnHome }: { latestWinners: Le
         <PiStarFill className="text-blue-500 text-4xl" />
       </div>
       <h2 className="text-3xl font-black text-slate-800 mb-2 z-10">Season Ended</h2>
-      <p className="text-slate-600 text-sm mb-6 max-w-[280px] leading-relaxed z-10 font-medium">
+      <p className="text-slate-600 text-sm mb-6 max-w-70 leading-relaxed z-10 font-medium">
         Thank you for participating! The tree season has concluded. Here are our top players:
       </p>
       {latestWinners && latestWinners.length > 0 && <WinnerList latestWinners={latestWinners} />}
-      <button onClick={onReturnHome} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10 w-full max-w-[200px]">
+      <button onClick={onReturnHome} className="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-transform z-10 w-full max-w-50">
         Return Home
       </button>
     </div>
