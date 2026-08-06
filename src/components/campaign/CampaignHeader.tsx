@@ -30,8 +30,16 @@ export default function CampaignHeader({
         <div>
           <h1 className="text-xl font-bold text-gradient">{campaign.title}</h1>
           {campaign.description && (
-            <p className="text-sm text-slate-500 mt-1">
-              {campaign.description}
+            <p className="text-sm text-slate-500 mt-1 whitespace-pre-line">
+              {campaign.description.split(/(`[^`]+`)/).map((part, i) => 
+                part.startsWith('`') && part.endsWith('`') ? (
+                  <span key={i} className="font-mono text-primary font-bold bg-primary/10 px-1.5 py-0.5 rounded text-[13px]">
+                    {part.slice(1, -1)}
+                  </span>
+                ) : (
+                  part
+                )
+              )}
             </p>
           )}
         </div>
